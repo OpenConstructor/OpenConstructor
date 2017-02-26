@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <!-- Document info -->
+    <title>communityconstructor</title>
+    <meta charset="UTF-8">
+    <!-- Embedded CSS -->
+    <style>
+        body {
+            background-color: #FFFFFF;
+        }
+        canvas {
+            background-color: #FFFFFF;
+            border: 1px solid #000000;
+        }
+    </style>
+    <!-- The files making up the constructor, in dependency order -->
+    <script type="text/javascript" src="common/vector.js"></script>
+    <script type="text/javascript" src="model/mass.js"></script>
+    <script type="text/javascript" src="model/spring.js"></script>
+    <script type="text/javascript" src="model/model.js"></script>
+    <script type="text/javascript" src="physics/physics.js"></script>
+    <script type="text/javascript" src="generators/generators.js"></script>
+    <script type="text/javascript" src="ui/ui.js"></script>
+    </head>
+    <body>
+        <!-- The canvas that CommunityConstructor will run in -->
+        <!-- 720x450 - original SC canvas -->
+        <!-- 657x428 - original SC model area -->
+        <canvas
+            id="viewport"
+            oncontextmenu="return false;"
+            width="720" height="450">
+        </canvas>
+    </body>
+</html>
