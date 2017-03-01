@@ -32,5 +32,22 @@
             oncontextmenu="return false;"
             width="720" height="450">
         </canvas>
+        <!-- hax -->
+        <script type="text/javascript">
+            m1 = MASS.mass(VECTOR.vec2d(2, 3));
+            m2 = MASS.mass(VECTOR.vec2d(2, 4));
+            m3 = MASS.mass(VECTOR.vec2d(5, 3.5));
+            MODEL.model.addMass(m1);
+            MODEL.model.addMass(m2);
+            MODEL.model.addMass(m3);
+            s1 = SPRING.spring(m1, m2, 100);
+            s2 = SPRING.spring(m2, m3, 100);
+            s3 = SPRING.spring(m3, m1, 100);
+            MODEL.model.addSpring(s1);
+            MODEL.model.addSpring(s2);
+            MODEL.model.addSpring(s3);
+            UI.ui.initialize();
+            UI.ui.loop();
+        </script>
     </body>
 </html>

@@ -8,10 +8,9 @@ SPRING.spring = (function(m1, m2, restlength, amplitude, phase, isBar)
     var _m1 = m1;
     var _m2 = m2;
     var _restlength = restlength;
-    var _amplitude = amplitude;
-    var _phase = phase;
+    var _amplitude = (amplitude == undefined)? 0 : amplitude;
+    var _phase = (phase == undefined)? 0 : phase;
     var _isBar = (isBar == undefined)? false : isBar;
-
 // public
     function __restlength()
     {

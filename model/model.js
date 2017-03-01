@@ -176,7 +176,7 @@ MODEL.model = (function()
 
         if (state.smallestIndex !== -1)
         {
-            var ret = {
+            let ret = {
                 mass: _masses[state.smallestIndex],
                 distance: Math.sqrt(state.sqrSmallestDistance)
             };
