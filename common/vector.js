@@ -105,13 +105,18 @@ VECTOR.dot = function(v1, v2)
     let [x2, y2] = v2.get();
     return x1*x2 + y1*y2;
 }
-VECTOR.unit = function(v)
+VECTOR.hat = function(v)
 {
-    return VECTOR.div(v, VECTOR.mag(v));
+    let mag = VECTOR.mag(v);
+    if (mag !== 0)
+    {
+        return VECTOR.div(v, mag);
+    }
+    return VECTOR.vec2d(0, 0);
 }
 VECTOR.project = function(v1, v2)
 {
-    let v2hat = VECTOR.unit(v2);
+    let v2hat = VECTOR.hat(v2);
     // from https://en.wikipedia.org/wiki/Dot_product#Scalar_projection_and_first_properties
     return VECTOR.mul(v2hat, VECTOR.dot(v1, v2hat));
 }

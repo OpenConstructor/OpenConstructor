@@ -5,21 +5,28 @@ var UI = UI || {};
 UI.ui = (function()
 {
 // private
-    var _pixelsPerMeter = 100;
     var _viewport = undefined;
     var _ctx = undefined;
+    // TODO should move into "ModelPanel" class
+    var _pixelsPerMeter = 100;
     function _pixelsToMeters(v)
     {
+        // TODO should move into "ModelPanel" class
         return VECTOR.div(v, _pixelsPerMeter);
     }
     function _metersToPixels(v)
     {
-        return VECTOR.mul(v, _pixelsPerMeter);
+        // TODO should move into "ModelPanel" class
+        let vv = VECTOR.mul(v, _pixelsPerMeter);
+        // TODO the below is a dirty stopgap until we have a real
+        // ModelPanel class
+        vv.y(450 - vv.y()); // hack
+        return vv;
     }
     function _drawMasses()
     {
-        // should move into "ModelPanel" class
-        let massDiameter = 5;
+        // TODO should move into "ModelPanel" class
+        let massDiameter = 4;
         MODEL.model.masses.forEach(function(mass) {
             let [x, y] = _metersToPixels(mass.s).get();
             _ctx.beginPath();
@@ -34,7 +41,7 @@ UI.ui = (function()
     }
     function _drawSprings()
     {
-        // should move into "ModelPanel" class
+        // TODO should move into "ModelPanel" class
         MODEL.model.springs.forEach(function(spr) {
             let [x1, y1] = _metersToPixels(spr.m1.s).get();
             let [x2, y2] = _metersToPixels(spr.m2.s).get();
@@ -46,30 +53,25 @@ UI.ui = (function()
             _ctx.closePath();
         });
     }
-    function _draw()
-    {
-        // this is actually the "ModelPanel" draw function and should move soon
-        // note fix dimensions
-        _ctx.clearRect(0, 0, _viewport.width, _viewport.height);
-        _drawMasses();
-        _drawSprings();
-        // draw circled mass
-        // draw rubberbanding
-    }
 // public
     function _initialize()
     {
         _viewport = document.getElementById('viewport');
         _ctx = _viewport.getContext('2d');
     }
-    function _loop(unusedTime)
+    function _draw()
     {
-        _draw();
-        window.requestAnimationFrame(_loop);
+        // this is actually the "ModelPanel" draw function and TODO should move soon
+        // note fix dimensions when you do that
+        _ctx.clearRect(0, 0, _viewport.width, _viewport.height);
+        _drawMasses();
+        _drawSprings();
+        // draw circled mass
+        // draw rubberbanding
     }
     return {
         initialize: _initialize,
-        loop: _loop
+        draw: _draw
     };
 })();
 // singleton

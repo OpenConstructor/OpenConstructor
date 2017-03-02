@@ -23,11 +23,11 @@ MODEL.model = (function()
 {
 // private
     var _mode = MODEL.Modes.SIMULATE;
-    var _g = -9.81;
-    var _f = 0.001;
-    var _k = 0.8;
-    var _surfaceFriction = 0.8;
-    var _surfaceReflection = -0.6;
+    var _g = -0.1;
+    var _f = 0.1;
+    var _k = 2;
+    var _surfaceFriction = 0.7;
+    var _surfaceReflection = -0.75;
     var _waveAmplitude = 1;
     var _wavePhase = 0;
     var _waveSpeed = 0.01;
