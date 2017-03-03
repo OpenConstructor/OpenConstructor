@@ -61,9 +61,6 @@ PHYSICS.instance = (function()
     }
     function _collide()
     {
-        // hacky for now
-        // TODO: replace with barsprings or walls around the model area in the model itself
-        // and make this function just iterate through them and apply the correction
         MODEL.instance.masses.forEach(function(mass) {
             if(mass.s.y() < 0 || mass.s.y() > MODEL.instance.height())
             {
@@ -78,6 +75,9 @@ PHYSICS.instance = (function()
                 // hack: not really friction
                 mass.v.y(mass.v.y() * (1 - MODEL.instance.surfaceFriction()));
                 mass.v.x(mass.v.x() * MODEL.instance.surfaceReflection());
+                // if auto-reverse mode is on, colliding with the left wall
+                // should make the wave go forwards and colliding with the
+                // right wall should make it go backwards
                 if(MODEL.instance.waveMode() === MODEL.WaveModes.AUTOREVERSE)
                 {
                     MODEL.instance.waveDirection((mass.s.x()===0)? 1 : -1);
@@ -100,8 +100,8 @@ PHYSICS.instance = (function()
 // public
     function _tick(dt)
     {
-        // physics engine is run with significant oversampling and
-        // frameskip in order to make springs look sufficiently "rigid".
+        // physics engine is run with lots of oversampling and frameskip in
+        // order to make springs look sufficiently "rigid".
         var kFrameskip = 10;
         var kOversampling = 10;
         for (var i = 0; i < kFrameskip; i++)
