@@ -8,7 +8,7 @@ UI.instance = (function()
     var _viewport = undefined;
     var _ctx = undefined;
     // TODO should move into "ModelPanel" class
-    var _pixelsPerMeter = 100;
+    var _pixelsPerMeter = 120;
     function _pixelsToMeters(v)
     {
         // TODO should move into "ModelPanel" class
@@ -42,7 +42,7 @@ UI.instance = (function()
     function _drawSprings()
     {
         // TODO should move into "ModelPanel" class
-        let muscleDotDiameter = 2;
+        let muscleDotDiameter = 1.5;
         MODEL.instance.springs.forEach(function(spr) {
             // draw line
             let [x1, y1] = _metersToPixels(spr.m1.s).get();

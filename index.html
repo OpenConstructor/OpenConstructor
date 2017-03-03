@@ -39,18 +39,76 @@
         <!-- Top-level glue code -->
         <script type="text/javascript">
             // default model
-            m1 = MASS.create(VECTOR.create(2, 3));
-            m2 = MASS.create(VECTOR.create(2, 4.2));
-            m3 = MASS.create(VECTOR.create(3, 3.5));
+            MODEL.instance.g(-0.02);
+            MODEL.instance.f(0.08);
+            MODEL.instance.k(3);
+            MODEL.instance.waveAmplitude(0.15);
+            MODEL.instance.waveSpeed(0.06);
+
+            m0 = MASS.create(VECTOR.create(2.315525, 0.766061));
+            m1 = MASS.create(VECTOR.create(1.767531, 0.778098));
+            m2 = MASS.create(VECTOR.create(0.835327, 0.798408));
+            m3 = MASS.create(VECTOR.create(0.256981, 0.719877));
+            m4 = MASS.create(VECTOR.create(0.776744, 0.106086));
+            m5 = MASS.create(VECTOR.create(1.320425, 0.506298));
+            m6 = MASS.create(VECTOR.create(2.140388, 0.0));
+            m7 = MASS.create(VECTOR.create(1.296868, 1.078139));
+            m8 = MASS.create(VECTOR.create(1.853856, 0.108938));
+            m9 = MASS.create(VECTOR.create(0.564718, 0.0));
             MODEL.instance.addMass(m1);
             MODEL.instance.addMass(m2);
             MODEL.instance.addMass(m3);
-            s1 = SPRING.create(m1, m2, 1, 0.1, 0);
-            s2 = SPRING.create(m2, m3, 1, 0.1, Math.PI/2);
-            s3 = SPRING.create(m3, m1, 1);
+            MODEL.instance.addMass(m4);
+            MODEL.instance.addMass(m5);
+            MODEL.instance.addMass(m6);
+            MODEL.instance.addMass(m7);
+            MODEL.instance.addMass(m8);
+            MODEL.instance.addMass(m9);
+
+            s1  = SPRING.create(m0, m1, 0.550);
+            s2  = SPRING.create(m1, m2, 0.930);
+            s3  = SPRING.create(m2, m3, 0.580);
+            s4  = SPRING.create(m2, m5, 0.546);
+            s5  = SPRING.create(m5, m1, 0.519);
+            s6  = SPRING.create(m1, m7, 0.555);
+            s7  = SPRING.create(m7, m2, 0.563);
+            s8  = SPRING.create(m7, m5, 0.570);
+            s9  = SPRING.create(m5, m3, 1.09);
+            s10 = SPRING.create(m3, m7, 1.09);
+            s11 = SPRING.create(m7, m0, 1.07);
+            s12 = SPRING.create(m0, m5, 1.03);
+            s13 = SPRING.create(m0, m2, 1.48);
+            s14 = SPRING.create(m1, m3, 1.51);
+            s15 = SPRING.create(m3, m4, 0.795, 0.5, 4.963716);
+            s16 = SPRING.create(m1, m6, 0.778, 0.5, 6.201504);
+            s17 = SPRING.create(m6, m0, 0.802, 0.5, 4.963716);
+            s18 = SPRING.create(m0, m8, 0.789, 0.5, 1.796991);
+            s19 = SPRING.create(m8, m1, 0.771, 0.5, 3.336371);
+            s20 = SPRING.create(m2, m9, 0.795, 0.5, 0.0);
+            s21 = SPRING.create(m9, m3, 0.795, 0.5, 1.796991);
+            s22 = SPRING.create(m4, m2, 0.788, 0.5, 3.39292);
             MODEL.instance.addSpring(s1);
             MODEL.instance.addSpring(s2);
             MODEL.instance.addSpring(s3);
+            MODEL.instance.addSpring(s4);
+            MODEL.instance.addSpring(s5);
+            MODEL.instance.addSpring(s6);
+            MODEL.instance.addSpring(s7);
+            MODEL.instance.addSpring(s8);
+            MODEL.instance.addSpring(s9);
+            MODEL.instance.addSpring(s10);
+            MODEL.instance.addSpring(s11);
+            MODEL.instance.addSpring(s12);
+            MODEL.instance.addSpring(s13);
+            MODEL.instance.addSpring(s14);
+            MODEL.instance.addSpring(s15);
+            MODEL.instance.addSpring(s16);
+            MODEL.instance.addSpring(s17);
+            MODEL.instance.addSpring(s18);
+            MODEL.instance.addSpring(s19);
+            MODEL.instance.addSpring(s20);
+            MODEL.instance.addSpring(s21);
+            MODEL.instance.addSpring(s22);
 
             // set up
             UI.instance.initialize();
