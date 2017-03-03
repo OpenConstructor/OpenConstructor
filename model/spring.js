@@ -2,7 +2,7 @@
 
 var SPRING = SPRING || {};
 
-SPRING.spring = (function(m1, m2, restlength, amplitude, phase, isBar)
+SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
 {
 // private
     var _m1 = m1;

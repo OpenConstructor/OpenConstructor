@@ -19,7 +19,7 @@ MODEL.WaveModes = {
 Object.freeze(MODEL.WaveModes);
 
 // model
-MODEL.model = (function()
+MODEL.instance = (function()
 {
 // private
     var _mode = MODEL.Modes.SIMULATE;

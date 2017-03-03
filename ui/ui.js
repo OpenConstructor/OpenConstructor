@@ -2,7 +2,7 @@
 
 var UI = UI || {};
 
-UI.ui = (function()
+UI.instance = (function()
 {
 // private
     var _viewport = undefined;
@@ -27,7 +27,7 @@ UI.ui = (function()
     {
         // TODO should move into "ModelPanel" class
         let massDiameter = 4;
-        MODEL.model.masses.forEach(function(mass) {
+        MODEL.instance.masses.forEach(function(mass) {
             let [x, y] = _metersToPixels(mass.s).get();
             _ctx.beginPath();
             _ctx.arc(
@@ -42,7 +42,7 @@ UI.ui = (function()
     function _drawSprings()
     {
         // TODO should move into "ModelPanel" class
-        MODEL.model.springs.forEach(function(spr) {
+        MODEL.instance.springs.forEach(function(spr) {
             let [x1, y1] = _metersToPixels(spr.m1.s).get();
             let [x2, y2] = _metersToPixels(spr.m2.s).get();
             _ctx.beginPath();

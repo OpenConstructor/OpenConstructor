@@ -2,7 +2,7 @@
 
 var VECTOR = VECTOR || {};
 
-VECTOR.vec2d = (function(x, y)
+VECTOR.create = (function(x, y)
 {
 // private
     var _x = x;
@@ -72,23 +72,23 @@ VECTOR.add = function(v1, v2)
 {
     let [x1, y1] = v1.get();
     let [x2, y2] = v2.get();
-    return new VECTOR.vec2d(x1+x2, y1+y2);
+    return new VECTOR.create(x1+x2, y1+y2);
 }
 VECTOR.sub = function(v1, v2)
 {
     let [x1, y1] = v1.get();
     let [x2, y2] = v2.get();
-    return new VECTOR.vec2d(x1-x2, y1-y2);
+    return new VECTOR.create(x1-x2, y1-y2);
 }
 VECTOR.mul = function(v, s)
 {
     let [x, y] = v.get();
-    return new VECTOR.vec2d(x*s, y*s);
+    return new VECTOR.create(x*s, y*s);
 }
 VECTOR.div = function(v, s)
 {
     let [x, y] = v.get();
-    return new VECTOR.vec2d(x/s, y/s);
+    return new VECTOR.create(x/s, y/s);
 }
 VECTOR.magSq = function(v)
 {
@@ -112,7 +112,7 @@ VECTOR.hat = function(v)
     {
         return VECTOR.div(v, mag);
     }
-    return VECTOR.vec2d(0, 0);
+    return VECTOR.create(0, 0);
 }
 VECTOR.project = function(v1, v2)
 {

@@ -2,7 +2,7 @@
 
 var PHYSICS = PHYSICS || {};
 
-PHYSICS.physics = (function()
+PHYSICS.instance = (function()
 {
 // private
     function _checkNan(v)
@@ -15,34 +15,34 @@ PHYSICS.physics = (function()
     }
     function _clearForces()
     {
-        MODEL.model.masses.forEach(function(mass) {
+        MODEL.instance.masses.forEach(function(mass) {
             mass.f.set(0, 0);
         });
     }
     function _gForce()
     {
-        MODEL.model.masses.forEach(function(mass) {
+        MODEL.instance.masses.forEach(function(mass) {
             // "g"ravity
-            mass.f.y(mass.f.y() + MODEL.model.g());
+            mass.f.y(mass.f.y() + MODEL.instance.g());
         });
     }
     function _fForce()
     {
-        MODEL.model.masses.forEach(function(mass) {
+        MODEL.instance.masses.forEach(function(mass) {
             // "f"riction (damping) opposes velocity
-            mass.f.add(VECTOR.mul(mass.v, -1 * MODEL.model.f()));
+            mass.f.add(VECTOR.mul(mass.v, -1 * MODEL.instance.f()));
         });
     }
     function _kForce()
     {
-        MODEL.model.springs.forEach(function(spr) {
+        MODEL.instance.springs.forEach(function(spr) {
+            // hoo"k"e's law (springiness)
             let ds = VECTOR.sub(spr.m2.s, spr.m1.s);
             let length = VECTOR.mag(ds); // distance between m1 and m2
             let dh = VECTOR.hat(ds);     // direction from m1 to m2
-            // "k" is hooke's law:  F=kX
+            // hooke's law:  F=kX
             // here, positive magnitude = inward (attraction to other mass)
-            let fMag = MODEL.model.k() * (length - spr.restlength());
-
+            let fMag = MODEL.instance.k() * (length - spr.restlength());
             spr.m1.f.add(VECTOR.mul(dh, fMag));
             spr.m2.f.add(VECTOR.mul(dh, -fMag));
 
@@ -51,7 +51,7 @@ PHYSICS.physics = (function()
     function _integrate(dt)
     {
         var state = { dt: dt }
-        MODEL.model.masses.forEach(function(mass) {
+        MODEL.instance.masses.forEach(function(mass) {
             // F=ma -> a=F/m
             // Euler's method
             mass.s.add(VECTOR.mul(mass.v, this.dt));
@@ -64,12 +64,12 @@ PHYSICS.physics = (function()
         // hacky, floor only for now
         // TODO: replace with barsprings or walls around the model area in the model itself
         // and make this function just iterate through them and apply the correction
-        MODEL.model.masses.forEach(function(mass) {
+        MODEL.instance.masses.forEach(function(mass) {
             if(mass.s.y() < 0)
             {
                 mass.s.y(0);
-                mass.v.x(mass.v.x() * (1 - MODEL.model.surfaceFriction()));  // hack: not really friction
-                mass.v.y(mass.v.y() * MODEL.model.surfaceReflection());
+                mass.v.x(mass.v.x() * (1 - MODEL.instance.surfaceFriction()));  // hack: not really friction
+                mass.v.y(mass.v.y() * MODEL.instance.surfaceReflection());
             }
         });
     }
@@ -105,3 +105,4 @@ PHYSICS.physics = (function()
     };
 })();
 // singleton
+
