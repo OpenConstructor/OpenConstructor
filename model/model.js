@@ -16,6 +16,7 @@ MODEL.WaveModes = {
     BACKWARD: "backward",
     MANUAL: "manual"
 }
+
 Object.freeze(MODEL.WaveModes);
 
 // model
@@ -28,10 +29,11 @@ MODEL.instance = (function()
     var _k = 2;
     var _surfaceFriction = 0.7;
     var _surfaceReflection = -0.75;
-    var _waveAmplitude = 1;
+    var _waveAmplitude = 0.5;
     var _wavePhase = 0;
-    var _waveSpeed = 0.01;
+    var _waveSpeed = 0.1;
     var _waveMode = MODEL.WaveModes.AUTOREVERSE;
+    var _waveDirection = 1;
     var _masses = [];
     var _springs = [];
 // public
@@ -116,6 +118,14 @@ MODEL.instance = (function()
         }
         return _waveMode;
     }
+    function __waveDirection(waveDirection)
+    {
+        if (waveDirection !== undefined)
+        {
+            _waveDirection = waveDirection;
+        }
+        return _waveDirection;
+    }
 
     // functions to do cooler/more useful stuff
     function _exportModel()
@@ -197,6 +207,7 @@ MODEL.instance = (function()
         wavePhase: __wavePhase,
         waveSpeed: __waveSpeed,
         waveMode: __waveMode,
+        waveDirection: __waveDirection,
         masses: _masses,
         springs: _springs,
         exportModel: _exportModel,

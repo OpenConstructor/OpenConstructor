@@ -45,8 +45,8 @@
             MODEL.instance.addMass(m1);
             MODEL.instance.addMass(m2);
             MODEL.instance.addMass(m3);
-            s1 = SPRING.create(m1, m2, 0.9);
-            s2 = SPRING.create(m2, m3, 1);
+            s1 = SPRING.create(m1, m2, 1, 0.1, 0);
+            s2 = SPRING.create(m2, m3, 1, 0.1, Math.PI/2);
             s3 = SPRING.create(m3, m1, 1);
             MODEL.instance.addSpring(s1);
             MODEL.instance.addSpring(s2);
@@ -61,6 +61,7 @@
                 // ignore ms timestamp for now and assume vsync at 60 Hz
                 let dt = 1/60;
                 UI.instance.draw();
+                WAVE.instance.tick();
                 PHYSICS.instance.tick(dt);
                 window.requestAnimationFrame(_loop);
             }
