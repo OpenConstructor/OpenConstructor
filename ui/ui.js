@@ -26,12 +26,12 @@ UI.instance = (function()
     function _drawMasses()
     {
         // TODO should move into "ModelPanel" class
-        let massDiameter = 4;
+        let massRadius = 4;
         MODEL.instance.masses.forEach(function(mass) {
             let [x, y] = _metersToPixels(mass.s).get();
             _ctx.beginPath();
             _ctx.arc(
-                x, y, massDiameter,
+                x, y, massRadius,
                 0, Math.PI * 2, false
             );
             _ctx.fillStyle = '#000000';
@@ -42,7 +42,7 @@ UI.instance = (function()
     function _drawSprings()
     {
         // TODO should move into "ModelPanel" class
-        let muscleDotDiameter = 1.5;
+        let muscleDotRadius = 1.5;
         MODEL.instance.springs.forEach(function(spr) {
             // draw line
             let [x1, y1] = _metersToPixels(spr.m1.s).get();
@@ -60,7 +60,7 @@ UI.instance = (function()
                 let ym = (y1 + y2)/2;
                 _ctx.beginPath();
                 _ctx.arc(
-                    xm, ym, muscleDotDiameter,
+                    xm, ym, muscleDotRadius,
                     0, Math.PI * 2, false
                 );
                 _ctx.fillStyle = '#000000';

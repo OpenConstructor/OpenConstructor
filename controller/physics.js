@@ -61,15 +61,27 @@ PHYSICS.instance = (function()
     }
     function _collide()
     {
-        // hacky, floor only for now
+        // hacky for now
         // TODO: replace with barsprings or walls around the model area in the model itself
         // and make this function just iterate through them and apply the correction
         MODEL.instance.masses.forEach(function(mass) {
-            if(mass.s.y() < 0)
+            if(mass.s.y() < 0 || mass.s.y() > MODEL.instance.height())
             {
-                mass.s.y(0);
-                mass.v.x(mass.v.x() * (1 - MODEL.instance.surfaceFriction()));  // hack: not really friction
+                mass.s.y((mass.s.y() < 0)? 0 : MODEL.instance.height());
+                // hack: not really friction
+                mass.v.x(mass.v.x() * (1 - MODEL.instance.surfaceFriction()));
                 mass.v.y(mass.v.y() * MODEL.instance.surfaceReflection());
+            }
+            if(mass.s.x() < 0 || mass.s.x() > MODEL.instance.width())
+            {
+                mass.s.x(mass.s.x() < 0? 0 : MODEL.instance.width());
+                // hack: not really friction
+                mass.v.y(mass.v.y() * (1 - MODEL.instance.surfaceFriction()));
+                mass.v.x(mass.v.x() * MODEL.instance.surfaceReflection());
+                if(MODEL.instance.waveMode() === MODEL.WaveModes.AUTOREVERSE)
+                {
+                    MODEL.instance.waveDirection((mass.s.x()===0)? 1 : -1);
+                }
             }
         });
     }

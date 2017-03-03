@@ -27,6 +27,8 @@ MODEL.instance = (function()
     var _g = -0.1;
     var _f = 0.1;
     var _k = 2;
+    var _width = 6;
+    var _height = 4;
     var _surfaceFriction = 0.7;
     var _surfaceReflection = -0.75;
     var _waveAmplitude = 0.5;
@@ -69,6 +71,22 @@ MODEL.instance = (function()
             _k = k;
         }
         return _k;
+    }
+    function __width(width)
+    {
+        if (width !== undefined)
+        {
+            _width = width;
+        }
+        return _width;
+    }
+    function __height(height)
+    {
+        if (height !== undefined)
+        {
+            _height = height;
+        }
+        return _height;
     }
     function __surfaceFriction(surfaceFriction)
     {
@@ -201,6 +219,8 @@ MODEL.instance = (function()
         g: __g,
         f: __f,
         k: __k,
+        width: __width,
+        height: __height,
         surfaceFriction: __surfaceFriction,
         surfaceReflection: __surfaceReflection,
         waveAmplitude: __waveAmplitude,
