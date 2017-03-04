@@ -7,83 +7,18 @@ UI.instance = (function()
 // private
     var _viewport = undefined;
     var _ctx = undefined;
-    // TODO should move into "ModelPanel" class
-    var _pixelsPerMeter = 120;
-    function _pixelsToMeters(v)
-    {
-        // TODO should move into "ModelPanel" class
-        return VECTOR.div(v, _pixelsPerMeter);
-    }
-    function _metersToPixels(v)
-    {
-        // TODO should move into "ModelPanel" class
-        let vv = VECTOR.mul(v, _pixelsPerMeter);
-        // TODO the below is a dirty stopgap until we have a real
-        // ModelPanel class
-        vv.y(450 - vv.y()); // hack
-        return vv;
-    }
-    function _drawMasses()
-    {
-        // TODO should move into "ModelPanel" class
-        let massRadius = 4;
-        MODEL.instance.masses.forEach(function(mass) {
-            let [x, y] = _metersToPixels(mass.s).get();
-            _ctx.beginPath();
-            _ctx.arc(
-                x, y, massRadius,
-                0, Math.PI * 2, false
-            );
-            _ctx.fillStyle = '#000000';
-            _ctx.fill();
-            _ctx.closePath();
-        });
-    }
-    function _drawSprings()
-    {
-        // TODO should move into "ModelPanel" class
-        let muscleDotRadius = 1.5;
-        MODEL.instance.springs.forEach(function(spr) {
-            // draw line
-            let [x1, y1] = _metersToPixels(spr.m1.s).get();
-            let [x2, y2] = _metersToPixels(spr.m2.s).get();
-            _ctx.beginPath();
-            _ctx.moveTo(x1, y1);
-            _ctx.lineTo(x2, y2);
-            _ctx.strokeStyle = '#000000';
-            _ctx.stroke();
-            _ctx.closePath();
-            // draw muscle dot
-            if (spr.amplitude() != 0.0)
-            {
-                let xm = (x1 + x2)/2;
-                let ym = (y1 + y2)/2;
-                _ctx.beginPath();
-                _ctx.arc(
-                    xm, ym, muscleDotRadius,
-                    0, Math.PI * 2, false
-                );
-                _ctx.fillStyle = '#000000';
-                _ctx.fill();
-                _ctx.closePath();
-            }
-        });
-    }
 // public
     function _initialize()
     {
+        // grab the canvas so we have someplace to draw
         _viewport = document.getElementById('viewport');
         _ctx = _viewport.getContext('2d');
+        // setup the events that the UI will listen for
     }
     function _draw()
     {
-        // this is actually the "ModelPanel" draw function and TODO should move soon
-        // note fix dimensions when you do that
         _ctx.clearRect(0, 0, _viewport.width, _viewport.height);
-        _drawMasses();
-        _drawSprings();
-        // draw circled mass
-        // draw rubberbanding
+        ROOTPANEL.instance.draw(_ctx);
     }
     return {
         initialize: _initialize,

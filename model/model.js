@@ -39,7 +39,6 @@ MODEL.instance = (function()
     var _masses = [];
     var _springs = [];
 // public
-    // accessors
     function __mode(mode)
     {
         if (mode !== undefined)
@@ -144,13 +143,13 @@ MODEL.instance = (function()
         }
         return _waveDirection;
     }
-
-    // functions to do cooler/more useful stuff
     function _exportModel()
     {
+        //TODO
     }
     function _importModel()
     {
+        //TODO
     }
     function _addMass(m)
     {
