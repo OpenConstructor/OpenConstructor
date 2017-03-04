@@ -35,13 +35,13 @@ VECTOR.create = (function(x, y)
     }
     function _add(other)
     {
-        let [x, y] = other.get();
+        var [x, y] = other.get();
         _x += x;
         _y += y;
     }
     function _sub(other)
     {
-        let [x, y] = other.get();
+        var [x, y] = other.get();
         _x -= x;
         _y -= y;
     }
@@ -70,29 +70,29 @@ VECTOR.create = (function(x, y)
 
 VECTOR.add = function(v1, v2)
 {
-    let [x1, y1] = v1.get();
-    let [x2, y2] = v2.get();
+    var [x1, y1] = v1.get();
+    var [x2, y2] = v2.get();
     return new VECTOR.create(x1+x2, y1+y2);
 }
 VECTOR.sub = function(v1, v2)
 {
-    let [x1, y1] = v1.get();
-    let [x2, y2] = v2.get();
+    var [x1, y1] = v1.get();
+    var [x2, y2] = v2.get();
     return new VECTOR.create(x1-x2, y1-y2);
 }
 VECTOR.mul = function(v, s)
 {
-    let [x, y] = v.get();
+    var [x, y] = v.get();
     return new VECTOR.create(x*s, y*s);
 }
 VECTOR.div = function(v, s)
 {
-    let [x, y] = v.get();
+    var [x, y] = v.get();
     return new VECTOR.create(x/s, y/s);
 }
 VECTOR.magSq = function(v)
 {
-    let [x, y] = v.get();
+    var [x, y] = v.get();
     return x*x + y*y;
 }
 VECTOR.mag = function(v)
@@ -101,13 +101,13 @@ VECTOR.mag = function(v)
 }
 VECTOR.dot = function(v1, v2)
 {
-    let [x1, y1] = v1.get();
-    let [x2, y2] = v2.get();
+    var [x1, y1] = v1.get();
+    var [x2, y2] = v2.get();
     return x1*x2 + y1*y2;
 }
 VECTOR.hat = function(v)
 {
-    let mag = VECTOR.mag(v);
+    var mag = VECTOR.mag(v);
     if (mag !== 0)
     {
         return VECTOR.div(v, mag);
@@ -116,20 +116,20 @@ VECTOR.hat = function(v)
 }
 VECTOR.project = function(v1, v2)
 {
-    let v2hat = VECTOR.hat(v2);
+    var v2hat = VECTOR.hat(v2);
     // from https://en.wikipedia.org/wiki/Dot_product#Scalar_projection_and_first_properties
     return VECTOR.mul(v2hat, VECTOR.dot(v1, v2hat));
 }
 VECTOR.equal = function(v1, v2)
 {
-    let [x1, y1] = v1.get();
-    let [x2, y2] = v2.get();
+    var [x1, y1] = v1.get();
+    var [x2, y2] = v2.get();
     return (x1 == x2) && (y1 == y2);
 }
 VECTOR.compare = function(v1, v2, tolerance)
 {
-    let [x1, y1] = v1.get();
-    let [x2, y2] = v2.get();
+    var [x1, y1] = v1.get();
+    var [x2, y2] = v2.get();
     return Math.abs(x2 - x1) <= tolerance &&
            Math.abs(y2 - y1) <= tolerance;
 }

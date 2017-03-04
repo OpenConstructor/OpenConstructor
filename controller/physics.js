@@ -37,12 +37,12 @@ PHYSICS.instance = (function()
     {
         MODEL.instance.springs.forEach(function(spr) {
             // hoo"k"e's law (springiness)
-            let ds = VECTOR.sub(spr.m2.s, spr.m1.s);
-            let length = VECTOR.mag(ds); // distance between m1 and m2
-            let dh = VECTOR.hat(ds);     // direction from m1 to m2
+            var ds = VECTOR.sub(spr.m2.s, spr.m1.s);
+            var length = VECTOR.mag(ds); // distance between m1 and m2
+            var dh = VECTOR.hat(ds);     // direction from m1 to m2
             // hooke's law:  F=kX
             // here, positive magnitude = inward (attraction to other mass)
-            let fMag = MODEL.instance.k() * (length - spr.restlength());
+            var fMag = MODEL.instance.k() * (length - spr.restlength());
             spr.m1.f.add(VECTOR.mul(dh, fMag));
             spr.m2.f.add(VECTOR.mul(dh, -fMag));
 

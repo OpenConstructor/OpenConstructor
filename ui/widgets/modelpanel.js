@@ -17,16 +17,16 @@ MODELPANEL.instance = (function(x, y, w, h)
     }
     function _metersToPixels(v)
     {
-        let vv = VECTOR.mul(v, _pixelsPerMeter);
+        var vv = VECTOR.mul(v, _pixelsPerMeter);
         // TODO the below is a dirty hack
         vv.y(450 - vv.y()); // replace 450 with _h
         return vv;
     }
     function _drawMasses(ctx)
     {
-        let massRadius = 4;
+        var massRadius = 4;
         MODEL.instance.masses.forEach(function(mass) {
-            let [x, y] = _metersToPixels(mass.s).get();
+            var [x, y] = _metersToPixels(mass.s).get();
             ctx.beginPath();
             ctx.arc(
                 x, y, massRadius,
@@ -39,11 +39,11 @@ MODELPANEL.instance = (function(x, y, w, h)
     }
     function _drawSprings(ctx)
     {
-        let muscleDotRadius = 1.5;
+        var muscleDotRadius = 1.5;
         MODEL.instance.springs.forEach(function(spr) {
             // draw line
-            let [x1, y1] = _metersToPixels(spr.m1.s).get();
-            let [x2, y2] = _metersToPixels(spr.m2.s).get();
+            var [x1, y1] = _metersToPixels(spr.m1.s).get();
+            var [x2, y2] = _metersToPixels(spr.m2.s).get();
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
@@ -53,8 +53,8 @@ MODELPANEL.instance = (function(x, y, w, h)
             // draw muscle dot
             if (spr.amplitude() != 0.0)
             {
-                let xm = (x1 + x2)/2;
-                let ym = (y1 + y2)/2;
+                var xm = (x1 + x2)/2;
+                var ym = (y1 + y2)/2;
                 ctx.beginPath();
                 ctx.arc(
                     xm, ym, muscleDotRadius,

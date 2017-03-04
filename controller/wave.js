@@ -6,7 +6,7 @@ WAVE.instance = (function()
 // public
     function _tick()
     {
-        let delta = MODEL.instance.waveSpeed() * MODEL.instance.waveDirection();
+        var delta = MODEL.instance.waveSpeed() * MODEL.instance.waveDirection();
         MODEL.instance.wavePhase(MODEL.instance.wavePhase() + delta);
     }
     return {

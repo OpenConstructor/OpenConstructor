@@ -153,7 +153,7 @@ MODEL.instance = (function()
     }
     function _addMass(m)
     {
-        let i = _masses.indexOf(m);
+        var i = _masses.indexOf(m);
         if (i === -1)
         {
             _masses.push(m);
@@ -161,7 +161,7 @@ MODEL.instance = (function()
     }
     function _removeMass(m)
     {
-        let i = _masses.indexOf(m);
+        var i = _masses.indexOf(m);
         if (i !== -1)
         {
             _masses.splice(i, 1);
@@ -169,7 +169,7 @@ MODEL.instance = (function()
     }
     function _addSpring(s)
     {
-        let i = _springs.indexOf(s);
+        var i = _springs.indexOf(s);
         if (i === -1)
         {
             _addMass(s.m1);
@@ -179,7 +179,7 @@ MODEL.instance = (function()
     }
     function _removeSpring(s)
     {
-        let i = _springs.indexOf(s);
+        var i = _springs.indexOf(s);
         if (i !== -1)
         {
             _springs.splice(i, 1);
@@ -193,7 +193,7 @@ MODEL.instance = (function()
         };
 
         _masses.forEach(function(m, i, a) {
-            let distance = VECTOR.magSq(VECTOR.sub(s, m.s))
+            var distance = VECTOR.magSq(VECTOR.sub(s, m.s))
             if (distance < this.sqrSmallestDistance)
             {
                 this.sqrSmallestDistance = distance;
@@ -203,7 +203,7 @@ MODEL.instance = (function()
 
         if (state.smallestIndex !== -1)
         {
-            let ret = {
+            var ret = {
                 mass: _masses[state.smallestIndex],
                 distance: Math.sqrt(state.sqrSmallestDistance)
             };

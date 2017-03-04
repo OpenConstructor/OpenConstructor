@@ -126,7 +126,7 @@
             function _loop(ms)
             {
                 // ignore ms timestamp for now and assume vsync at 60 Hz
-                let dt = 1/60;
+                var dt = 1/60;
                 UI.instance.draw();
                 WAVE.instance.tick();
                 PHYSICS.instance.tick(dt);
