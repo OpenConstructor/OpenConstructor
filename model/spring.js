@@ -13,8 +13,12 @@ SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
     var _phase = (phase == undefined)? 0 : phase;
     var _isBar = (isBar == undefined)? false : isBar;
 // public
-    function __restlength()
+    function __restlength(restlength)
     {
+        if (restlength !== undefined)
+        {
+            _restlength = restlength;
+        }
         var phase = _phase + MODEL.instance.wavePhase();
         return _restlength * (1 - Math.sin(phase)*_amplitude*MODEL.instance.waveAmplitude());
     }
