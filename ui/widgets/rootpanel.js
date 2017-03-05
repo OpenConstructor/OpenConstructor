@@ -12,8 +12,8 @@ ROOTPANEL.create = (function(w, h)
 
     var _children = [
         MODELPANEL.create(64, 22, 657, 428),
-        MENUPANEL.create(0, 0, 720, 22),
         WAVEPANEL.create(0, 22, 64, 298),
+        MENUPANEL.create(0, 0, 720, 22),
         GFKPANEL.create (0, 320, 64, 130)
     ];
 // public

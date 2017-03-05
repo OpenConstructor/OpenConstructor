@@ -38,20 +38,25 @@ WAVEPANEL.create = (function(x, y, w, h)
     function _drawMuscleBars(ctx)
     {
         MODEL.instance.springs.forEach(function(spr) {
+            var color = "#000000";
+            var circled = false;
+            if (spr === MODEL.instance.selectedItem())
+            {
+                color = _selectionColor;
+                circled = true;
+            }
+            else if (spr === MODEL.instance.hoveredItem())
+            {
+                color = _hoverColor;
+                circled = true;
+            }
             if (spr.amplitude() != 0)
             {
                 var barDotRadius = 2;
+                var circleRadius = barDotRadius * 2;
                 var xx = spr.amplitude() * (_w-20)/2.0 + _x + _w/2;
                 var yy = spr.phase() / (2*Math.PI) * _h + _y;
-                var color = "#000000";
-                if (spr === MODEL.instance.selectedItem())
-                {
-                    color = _selectionColor;
-                }
-                else if (spr === MODEL.instance.hoveredItem())
-                {
-                    color = _hoverColor;
-                }
+                // draw line and dot
                 ctx.beginPath();
                 ctx.fillStyle = color;
                 ctx.arc(
@@ -64,6 +69,18 @@ WAVEPANEL.create = (function(x, y, w, h)
                 ctx.lineTo(_x + _w - 10, yy);
                 ctx.stroke();
                 ctx.closePath();
+                // circle the dot
+                if (circled)
+                {
+                    ctx.beginPath();
+                    ctx.strokeStyle = color;
+                    ctx.arc(
+                        xx, yy, circleRadius,
+                        0, Math.PI * 2, false
+                    );
+                    ctx.stroke();
+                    ctx.closePath();
+                    }
             }
         });
     }

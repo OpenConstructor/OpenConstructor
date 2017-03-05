@@ -34,38 +34,60 @@ MODELPANEL.create = (function(x, y, w, h)
     function _drawMasses(ctx)
     {
         var massRadius = 4;
+        var circleRadius = massRadius * 2;
         MODEL.instance.masses.forEach(function(mass) {
             var [x, y] = _metersToPixels(mass.s).get();
+            var color = "#000000";
+            var circled = false;
+            if (mass === MODEL.instance.selectedItem())
+            {
+                color = _selectionColor;
+                circled = true;
+            }
+            else if (mass === MODEL.instance.hoveredItem())
+            {
+                color = _hoverColor;
+                circled = true;
+            }
+            // draw mass
             ctx.beginPath();
+            ctx.fillStyle = color;
             ctx.arc(
                 x, y, massRadius,
                 0, Math.PI * 2, false
             );
-            ctx.fillStyle = "#000000";
-            if (mass === MODEL.instance.selectedItem())
-            {
-                ctx.fillStyle = _selectionColor;
-            }
-            else if (mass === MODEL.instance.hoveredItem())
-            {
-                ctx.fillStyle = _hoverColor;
-            }
             ctx.fill();
             ctx.closePath();
+            // circle mass
+            if (circled)
+            {
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.arc(
+                    x, y, circleRadius,
+                    0, Math.PI * 2, false
+                );
+                ctx.stroke();
+                ctx.closePath();
+            }
         });
     }
     function _drawSprings(ctx)
     {
         var muscleDotRadius = 1.5;
+        var circleRadius = muscleDotRadius * 2;
         MODEL.instance.springs.forEach(function(spr) {
             var color = "#000000";
+            var circled = false;
             if (spr === MODEL.instance.selectedItem())
             {
                 color = _selectionColor;
+                circled = true;
             } 
             else if (spr === MODEL.instance.hoveredItem())
             {
                 color = _hoverColor;
+                circled = true;
             }
             // draw line
             var [x1, y1] = _metersToPixels(spr.m1.s).get();
@@ -88,6 +110,20 @@ MODELPANEL.create = (function(x, y, w, h)
                 );
                 ctx.fillStyle = color;
                 ctx.fill();
+                ctx.closePath();
+            }
+            // circle the spring
+            if (circled)
+            {
+                var xm = (x1 + x2)/2;
+                var ym = (y1 + y2)/2;
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.arc(
+                    xm, ym, circleRadius,
+                    0, Math.PI * 2, false
+                );
+                ctx.stroke();
                 ctx.closePath();
             }
         });
