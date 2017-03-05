@@ -44,6 +44,7 @@ MODEL.instance = (function()
     var _waveMode = MODEL.WaveModes.AUTOREVERSE;
     var _waveDirection = 1;
     var _selectedItem = undefined;
+    var _hoveredItem = undefined;
     var _masses = [];
     var _springs = [];
     function _springExists(m1, m2)
@@ -192,6 +193,14 @@ MODEL.instance = (function()
             _selectedItem = selectedItem;
         }
         return _selectedItem;
+    }
+    function __hoveredItem(hoveredItem)
+    {
+        if (hoveredItem !== undefined)
+        {
+            _hoveredItem = hoveredItem;
+        }
+        return _hoveredItem;
     }
     function _exportModel()
     {
@@ -383,6 +392,7 @@ MODEL.instance = (function()
         waveMode: __waveMode,
         waveDirection: __waveDirection,
         selectedItem: __selectedItem,
+        hoveredItem: __hoveredItem,
         masses: _masses,
         springs: _springs,
         exportModel: _exportModel,

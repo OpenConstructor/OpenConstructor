@@ -14,6 +14,7 @@ WAVEPANEL.create = (function(x, y, w, h)
         BUTTON.create(x+w-10, y, 10, h, function(){}),
     ];
     var _selectionColor = "#6ab5ff";
+    var _hoverColor = "#0000ff";
     function _drawSineWave(ctx)
     {
         var amplitudeX = MODEL.instance.waveAmplitude() * (_w-20)/2.0 + _x;
@@ -46,6 +47,10 @@ WAVEPANEL.create = (function(x, y, w, h)
                 if (spr === MODEL.instance.selectedItem())
                 {
                     color = _selectionColor;
+                }
+                else if (spr === MODEL.instance.hoveredItem())
+                {
+                    color = _hoverColor;
                 }
                 ctx.beginPath();
                 ctx.fillStyle = color;

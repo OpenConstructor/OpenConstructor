@@ -11,7 +11,6 @@ MODELPANEL.create = (function(x, y, w, h)
     var _h = h;
     var _mousePosition = undefined;
     var _mouseDown = false;
-    var _hoveredItem = undefined;
     //var _children = [];   // this widget doesn't have children
     var _pixelsPerMeter = 120;
     var _selectionColor = "#6ab5ff";
@@ -47,7 +46,7 @@ MODELPANEL.create = (function(x, y, w, h)
             {
                 ctx.fillStyle = _selectionColor;
             }
-            else if (mass === _hoveredItem)
+            else if (mass === MODEL.instance.hoveredItem())
             {
                 ctx.fillStyle = _hoverColor;
             }
@@ -64,7 +63,7 @@ MODELPANEL.create = (function(x, y, w, h)
             {
                 color = _selectionColor;
             } 
-            else if (spr === _hoveredItem)
+            else if (spr === MODEL.instance.hoveredItem())
             {
                 color = _hoverColor;
             }
@@ -100,8 +99,9 @@ MODELPANEL.create = (function(x, y, w, h)
             item && item.isFreeMass !== undefined)
         {
             var [x1, y1] = _metersToPixels(item.s).get();
-            var [x2, y2] = (_hoveredItem && _hoveredItem.isFreeMass)?
-                                _metersToPixels(_hoveredItem.s).get() :
+            item = MODEL.instance.hoveredItem();
+            var [x2, y2] = (item && _item.isFreeMass)?
+                                _metersToPixels(item.s).get() :
                                 _mousePosition.get();
             ctx.beginPath();
             ctx.moveTo(x1, y1);
@@ -196,7 +196,7 @@ MODELPANEL.create = (function(x, y, w, h)
             case "mousemove":
                 _mousePosition = exy;
                 // hover
-                _hoveredItem = _getNearestItem(exy, _mouseSlopPx);
+                MODEL.instance.hoveredItem(_getNearestItem(exy, _mouseSlopPx) || null);
                 // drag
                 if (_mouseDown && MODEL.instance.selectedItem())
                 {
