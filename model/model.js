@@ -344,53 +344,15 @@ MODEL.instance = (function()
     }
     function _findNearestMass(s)
     {
-        var state = {
-            sqrSmallestDistance: Number.POSITIVE_INFINITY,
-            smallestIndex: -1
-        };
-
-        _masses.forEach(function(mass, i) {
-            var distance = VECTOR.magSq(VECTOR.sub(s, mass.s));
-            if (distance < this.sqrSmallestDistance)
-            {
-                this.sqrSmallestDistance = distance;
-                this.smallestIndex = i;
-            }
-        }, state);
-
-        if (state.smallestIndex !== -1)
-        {
-            var ret = {
-                item: _masses[state.smallestIndex],
-                distance: Math.sqrt(state.sqrSmallestDistance)
-            };
-            return ret;
-        }
+        return UTIL.findNearest(s, _masses, function(mass) {
+            return mass.s;
+        });
     }
     function _findNearestSpring(s)
     {
-        var state = {
-            sqrSmallestDistance: Number.POSITIVE_INFINITY,
-            smallestIndex: -1
-        };
-        _springs.forEach(function(spr, i) {
-            var distance = VECTOR.magSq(VECTOR.sub(s, 
-                VECTOR.div(VECTOR.add(spr.m1.s, spr.m2.s), 2)))
-            if (distance < this.sqrSmallestDistance)
-            {
-                this.sqrSmallestDistance = distance;
-                this.smallestIndex = i;
-            }
-        }, state);
-
-        if (state.smallestIndex !== -1)
-        {
-            var ret = {
-                item: _springs[state.smallestIndex],
-                distance: Math.sqrt(state.sqrSmallestDistance)
-            };
-            return ret;
-        }
+        return UTIL.findNearest(s, _springs, function(spring) {
+            return VECTOR.div(VECTOR.add(spring.m1.s, spring.m2.s), 2);
+        });
     }
     return {
         mode: __mode,

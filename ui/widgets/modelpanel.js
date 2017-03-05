@@ -11,11 +11,11 @@ MODELPANEL.create = (function(x, y, w, h)
     var _h = h;
     var _mousePosition = undefined;
     var _mouseDown = false;
+    var _mouseSlopPx = 25;
     //var _children = [];   // this widget doesn't have children
     var _pixelsPerMeter = 120;
     var _selectionColor = "#6ab5ff";
     var _hoverColor = "#0000ff";
-    var _mouseSlopPx = 50;
     function _pixelsToMeters(v)
     {
         var vv = VECTOR.create(v.x(), v.y());
@@ -136,7 +136,7 @@ MODELPANEL.create = (function(x, y, w, h)
         {
             var [x1, y1] = _metersToPixels(item.s).get();
             item = MODEL.instance.hoveredItem();
-            var [x2, y2] = (item && _item.isFreeMass)?
+            var [x2, y2] = (item && item.isFreeMass)?
                                 _metersToPixels(item.s).get() :
                                 _mousePosition.get();
             ctx.beginPath();

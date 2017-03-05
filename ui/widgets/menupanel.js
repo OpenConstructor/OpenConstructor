@@ -40,6 +40,7 @@ MENUPANEL.create = (function(x, y, w, h)
             MODEL.instance.mode),
         BUTTON.create(x+(w-64)/3+64, y, (w-64)/3, h,
             function(mouseButton) {
+                MODEL.instance.lastWall(MODEL.Walls.UNKNOWN);
                 switch (MODEL.instance.waveMode())
                 {
                 case MODEL.WaveModes.AUTOREVERSE:
