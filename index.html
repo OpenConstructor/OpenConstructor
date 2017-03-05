@@ -15,6 +15,7 @@
         }
     </style>
     <!-- The files making up the constructor, in dependency order -->
+    <script type="text/javascript" src="common/util.js"></script>
     <script type="text/javascript" src="common/vector.js"></script>
     <script type="text/javascript" src="model/mass.js"></script>
     <script type="text/javascript" src="model/spring.js"></script>
@@ -128,8 +129,11 @@
                 // ignore ms timestamp for now and assume vsync at 60 Hz
                 var dt = 1/60;
                 UI.instance.draw();
-                WAVE.instance.tick();
-                PHYSICS.instance.tick(dt);
+                if (MODEL.instance.mode() == MODEL.Modes.SIMULATE)
+                {
+                    WAVE.instance.tick();
+                    PHYSICS.instance.tick(dt);
+                }
                 window.requestAnimationFrame(_loop);
             }
 

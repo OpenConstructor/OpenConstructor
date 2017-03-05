@@ -2,11 +2,11 @@
 
 var GFKPANEL = GFKPANEL || {};
 
-GFKPANEL.instance = (function(w, h)
+GFKPANEL.create = (function(x, y, w, h)
 {
 // private
-    var _x = 0;
-    var _y = 0;
+    var _x = x;
+    var _y = y;
     var _w = w;
     var _h = h;
     var _children = []; //TODO
@@ -45,9 +45,17 @@ GFKPANEL.instance = (function(w, h)
     }
     function _draw(ctx)
     {
+        UTIL.drawBoundingRectangle(ctx, _x, _y, _w, _h);
     }
-    function _signal(e)
+    function _signal(e, exy)
     {
+        _children.forEach(function(child) {
+            if (UTIL.inBounds(exy.x(), exy.y(),
+                            child.x(), child.y(), child.w(), child.h()))
+            {
+                child.signal(e, exy);
+            }
+        });
     }
     return {
         x: __x,
@@ -57,6 +65,4 @@ GFKPANEL.instance = (function(w, h)
         draw: _draw,
         signal: _signal
     };
-})();
-// singleton
-
+});

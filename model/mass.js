@@ -16,8 +16,12 @@ MASS.create = (function(s, isFreeMass)
     {
         return _m;
     }
-    function _isFreeMass()
+    function _isFreeMass(isFreeMass)
     {
+        if (isFreeMass !== undefined)
+        {
+            _free = isFreeMass;
+        }
         return _free;
     }
     return {

@@ -13,7 +13,7 @@ Object.freeze(MODEL.Modes);
 MODEL.WaveModes = {
     AUTOREVERSE: "auto-reverse",
     FORWARD: "forward",
-    BACKWARD: "backward",
+    REVERSE: "reverse",
     MANUAL: "manual"
 }
 
@@ -27,8 +27,8 @@ MODEL.instance = (function()
     var _g = -0.1;
     var _f = 0.1;
     var _k = 2;
-    var _width = 6;
-    var _height = 4;
+    var _width = 5.475;
+    var _height = 3.57;
     var _surfaceFriction = 0.7;
     var _surfaceReflection = -0.75;
     var _waveAmplitude = 0.5;
@@ -36,8 +36,20 @@ MODEL.instance = (function()
     var _waveSpeed = 0.1;
     var _waveMode = MODEL.WaveModes.AUTOREVERSE;
     var _waveDirection = 1;
+    var _selectedItem = undefined;
     var _masses = [];
     var _springs = [];
+    function _springExists(m1, m2)
+    {
+        _springs.forEach(function(spr) {
+            if ((spr.m1 === m1 && spr.m2 === m2) ||
+                (spr.m1 === m2 && spr.m2 === m1))
+            {
+                return true;
+            }
+        });
+        return false;
+    }
 // public
     function __mode(mode)
     {
@@ -132,6 +144,21 @@ MODEL.instance = (function()
         if (waveMode !== undefined)
         {
             _waveMode = waveMode;
+            // if needed, change current wave direction to comply with the mode
+            switch (waveMode)
+            {
+            case MODEL.WaveModes.AUTOREVERSE:
+                _waveDirection = (_waveDirection == 0)? 1 : _waveDirection;
+            case MODEL.WaveModes.FORWARD:
+                _waveDirection = 1;
+                break;
+            case MODEL.WaveModes.REVERSE:
+                _waveDirection = -1;
+                break;
+            case MODEL.WaveModes.MANUAL:
+                _waveDirection = 0;
+                break;
+            }
         }
         return _waveMode;
     }
@@ -142,6 +169,14 @@ MODEL.instance = (function()
             _waveDirection = waveDirection;
         }
         return _waveDirection;
+    }
+    function __selectedItem(selectedItem)
+    {
+        if (selectedItem !== undefined)
+        {
+            _selectedItem = selectedItem;
+        }
+        return _selectedItem;
     }
     function _exportModel()
     {
@@ -161,29 +196,59 @@ MODEL.instance = (function()
     }
     function _removeMass(m)
     {
+        var removed = false;
         var i = _masses.indexOf(m);
         if (i !== -1)
         {
             _masses.splice(i, 1);
+
+            var state = {
+                victimSprings: []
+            }
+            _springs.forEach(function(spr, i) {
+                if (spr.m1 == m || spr.m2 == m)
+                {
+                    this.victimSprings.push(spr);
+                }
+            }, state);
+            for (i = state.victimSprings.length-1; i >= 0; i--)
+            {
+                _removeSpring(state.victimSprings[i]);
+                removed = true;
+            }
         }
+        return removed;
     }
     function _addSpring(s)
     {
+        if (_springExists(s.m1, s.m2))
+        {
+            return;
+        }
         var i = _springs.indexOf(s);
         if (i === -1)
         {
-            _addMass(s.m1);
-            _addMass(s.m2);
+            if (_masses.indexOf(s.m1) === -1)
+            {
+                _addMass(s.m1);
+            }
+            if (_masses.indexOf(s.m2) === -1)
+            {
+                _addMass(s.m2);
+            }
             _springs.push(s);
         }
     }
     function _removeSpring(s)
     {
+        var removed = false;
         var i = _springs.indexOf(s);
         if (i !== -1)
         {
             _springs.splice(i, 1);
+            removed = true;
         }
+        return removed;
     }
     function _findNearestMass(s)
     {
@@ -192,8 +257,8 @@ MODEL.instance = (function()
             smallestIndex: -1
         };
 
-        _masses.forEach(function(m, i, a) {
-            var distance = VECTOR.magSq(VECTOR.sub(s, m.s))
+        _masses.forEach(function(mass, i) {
+            var distance = VECTOR.magSq(VECTOR.sub(s, mass.s))
             if (distance < this.sqrSmallestDistance)
             {
                 this.sqrSmallestDistance = distance;
@@ -204,7 +269,7 @@ MODEL.instance = (function()
         if (state.smallestIndex !== -1)
         {
             var ret = {
-                mass: _masses[state.smallestIndex],
+                item: _masses[state.smallestIndex],
                 distance: Math.sqrt(state.sqrSmallestDistance)
             };
             return ret;
@@ -212,6 +277,28 @@ MODEL.instance = (function()
     }
     function _findNearestSpring(s)
     {
+        var state = {
+            sqrSmallestDistance: Number.POSITIVE_INFINITY,
+            smallestIndex: -1
+        };
+        _springs.forEach(function(spr, i) {
+            var distance = VECTOR.magSq(VECTOR.sub(s, 
+                VECTOR.div(VECTOR.add(spr.m1.s, spr.m2.s), 2)))
+            if (distance < this.sqrSmallestDistance)
+            {
+                this.sqrSmallestDistance = distance;
+                this.smallestIndex = i;
+            }
+        }, state);
+
+        if (state.smallestIndex !== -1)
+        {
+            var ret = {
+                item: _springs[state.smallestIndex],
+                distance: Math.sqrt(state.sqrSmallestDistance)
+            };
+            return ret;
+        }
     }
     return {
         mode: __mode,
@@ -227,6 +314,7 @@ MODEL.instance = (function()
         waveSpeed: __waveSpeed,
         waveMode: __waveMode,
         waveDirection: __waveDirection,
+        selectedItem: __selectedItem,
         masses: _masses,
         springs: _springs,
         exportModel: _exportModel,

@@ -54,9 +54,12 @@ PHYSICS.instance = (function()
         MODEL.instance.masses.forEach(function(mass) {
             // F=ma -> a=F/m
             // Euler's method
-            mass.s.add(VECTOR.mul(mass.v, this.dt));
-            mass.v.add(VECTOR.mul(mass.a, this.dt));
-            mass.a = VECTOR.div(mass.f, mass.m());
+            if (mass.isFreeMass())
+            {
+                mass.s.add(VECTOR.mul(mass.v, this.dt));
+                mass.v.add(VECTOR.mul(mass.a, this.dt));
+                mass.a = VECTOR.div(mass.f, mass.m());
+            }
         }, state);
     }
     function _collide()

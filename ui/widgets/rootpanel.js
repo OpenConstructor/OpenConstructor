@@ -2,18 +2,19 @@
 
 var ROOTPANEL = ROOTPANEL || {};
 
-ROOTPANEL.instance = (function(w, h)
+ROOTPANEL.create = (function(w, h)
 {
 // private
     var _x = 0;
     var _y = 0;
     var _w = w;
     var _h = h;
+
     var _children = [
-        GFKPANEL.instance,
-        MENUPANEL.instance,
-        MODELPANEL.instance,
-        WAVEPANEL.instance
+        MODELPANEL.create(64, 22, 657, 428),
+        MENUPANEL.create(0, 0, 720, 22),
+        WAVEPANEL.create(0, 22, 64, 298),
+        GFKPANEL.create (0, 320, 64, 130)
     ];
 // public
     function __x(x)
@@ -54,8 +55,15 @@ ROOTPANEL.instance = (function(w, h)
             child.draw(ctx);
         });
     }
-    function _signal(e)
+    function _signal(e, exy)
     {
+        _children.forEach(function(child) {
+            if (UTIL.inBounds(exy.x(), exy.y(),
+                            child.x(), child.y(), child.w(), child.h()))
+            {
+                child.signal(e, exy);
+            }
+        });
     }
     return {
         x: __x,
@@ -65,5 +73,4 @@ ROOTPANEL.instance = (function(w, h)
         draw: _draw,
         signal: _signal
     };
-})();
-// singleton
+});

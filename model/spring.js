@@ -7,7 +7,8 @@ SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
 // private
     var _m1 = m1;
     var _m2 = m2;
-    var _restlength = restlength;
+    var _restlength = (restlength == undefined)?
+            VECTOR.mag(VECTOR.sub(m2.s, m1.s)) : restlength;
     var _amplitude = (amplitude == undefined)? 0 : amplitude;
     var _phase = (phase == undefined)? 0 : phase;
     var _isBar = (isBar == undefined)? false : isBar;
