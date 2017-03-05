@@ -91,12 +91,32 @@ PHYSICS.instance = (function()
                 // hack: not really friction
                 mass.v.y(mass.v.y() * (1 - MODEL.instance.surfaceFriction()));
                 mass.v.x(mass.v.x() * MODEL.instance.surfaceReflection());
-                // if auto-reverse mode is on, colliding with the left wall
-                // should make the wave go forwards and colliding with the
-                // right wall should make it go backwards
-                if(MODEL.instance.waveMode() === MODEL.WaveModes.AUTOREVERSE)
+                // if auto-reverse mode is on, hitting a wall should make the
+                // model reverse direction, but only if it isn't the same wall
+                // the model last hit.  without this "debouncing", models will
+                // constantly switch direction as long as they are touching a
+                // wall.
+                if (MODEL.instance.waveMode() === MODEL.WaveModes.AUTOREVERSE)
+
                 {
-                    MODEL.instance.waveDirection((mass.s.x()===0)? 1 : -1);
+                    if (mass.s.x() <= 0)
+                    {
+                        // hit left wall
+                        if (MODEL.instance.lastWall() !== MODEL.Walls.LEFT)
+                        {
+                            MODEL.instance.lastWall(MODEL.Walls.LEFT);
+                            MODEL.instance.waveDirection(MODEL.instance.waveDirection()*-1);
+                        }
+                    }
+                    else
+                    {
+                        // hit right wall
+                        if (MODEL.instance.lastWall() !== MODEL.Walls.RIGHT)
+                        {
+                            MODEL.instance.lastWall(MODEL.Walls.RIGHT);
+                            MODEL.instance.waveDirection(MODEL.instance.waveDirection()*-1);
+                        }
+                    }
                 }
             }
         });

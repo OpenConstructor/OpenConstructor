@@ -23,6 +23,13 @@ MODEL.GravityDirections = {
     OFF: "gravity off",
     UP: "gravity reverse"
 };
+
+MODEL.Walls = {
+    LEFT: "left",
+    RIGHT: "right",
+    UNKNOWN: "unknown"
+};
+
 Object.freeze(MODEL.GravityDirections);
 
 // model
@@ -43,6 +50,7 @@ MODEL.instance = (function()
     var _waveSpeed = 0.1;
     var _waveMode = MODEL.WaveModes.AUTOREVERSE;
     var _waveDirection = 1;
+    var _lastWall = MODEL.Walls.UNKNOWN;
     var _selectedItem = undefined;
     var _hoveredItem = undefined;
     var _masses = [];
@@ -185,6 +193,14 @@ MODEL.instance = (function()
             _waveDirection = waveDirection;
         }
         return _waveDirection;
+    }
+    function __lastWall(lastWall)
+    {
+        if (lastWall !== undefined)
+        {
+            _lastWall = lastWall;
+        }
+        return _lastWall;
     }
     function __selectedItem(selectedItem)
     {
@@ -391,6 +407,7 @@ MODEL.instance = (function()
         waveSpeed: __waveSpeed,
         waveMode: __waveMode,
         waveDirection: __waveDirection,
+        lastWall: __lastWall,
         selectedItem: __selectedItem,
         hoveredItem: __hoveredItem,
         masses: _masses,
