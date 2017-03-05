@@ -13,6 +13,7 @@ MENUPANEL.create = (function(x, y, w, h)
         BUTTON.create(x, y, w/3, h,
             function(mouseButton) {
                 MODEL.instance.selectedItem(null);
+                MODEL.instance.exportModelToURL();
                 switch (MODEL.instance.mode())
                 {
                 case MODEL.Modes.SIMULATE:

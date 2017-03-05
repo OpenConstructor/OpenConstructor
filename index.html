@@ -120,6 +120,12 @@
             MODEL.instance.addSpring(s21);
             MODEL.instance.addSpring(s22);
 
+            // if a different model was specified in the url, load it
+            if(window.location.href.indexOf("#") !== -1)
+            {
+                MODEL.instance.importModelFromURL();
+            }
+
             // set up
             UI.instance.initialize();
 

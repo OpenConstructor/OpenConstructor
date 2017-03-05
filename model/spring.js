@@ -42,13 +42,22 @@ SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
     {
         return _isBar;
     }
+    function _toJSON()
+    {
+        return {"m1": MODEL.instance.masses.indexOf(_m1),
+                "m2": MODEL.instance.masses.indexOf(_m2),
+                "restlength": _restlength,
+                "amplitude": _amplitude,
+                "phase": _phase};
+    }
     return {
         m1: _m1,
         m2: _m2,
         restlength: __restlength,
         amplitude: __amplitude,
         phase: __phase,
-        isBar: __isBar
+        isBar: __isBar,
+        toJSON: _toJSON
     }
 });
 

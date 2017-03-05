@@ -180,11 +180,61 @@ MODEL.instance = (function()
     }
     function _exportModel()
     {
-        //TODO
+        return JSON.stringify({"version": 0,
+                               "g": _g,
+                               "f": _f,
+                               "k": _k,
+                               "width": _width,
+                               "height": _height,
+                               "surfaceFriction": _surfaceFriction,
+                               "surfaceReflection": _surfaceReflection,
+                               "waveAmplitude": _waveAmplitude,
+                               "wavePhase": _wavePhase,
+                               "waveSpeed": _waveSpeed,
+                               "waveMode": _waveMode,
+                               "waveDirection": _waveDirection,
+                               "masses": MODEL.instance.masses,
+                               "springs": MODEL.instance.springs});
     }
-    function _importModel()
+    function _exportModelToURL()
     {
-        //TODO
+        var exportStr = _exportModel();
+        window.location.href = window.location.href.split("#")[0] + "#" + btoa(exportStr);
+    }
+    function _importModel(jstr)
+    {
+        var myJson = JSON.parse(jstr);
+        _masses.length = 0;
+        _springs.length = 0;
+        _g = myJson.g;
+        _f = myJson.f;
+        _k = myJson.k;
+        _width = myJson.width;
+        _height = myJson.height;
+        _surfaceFriction = myJson.surfaceFriction;
+        _surfaceReflection = myJson.surfaceReflection;
+        _waveAmplitude = myJson.waveAmplitude;
+        _wavePhase = myJson.wavePhase;
+        _waveSpeed = myJson.waveSpeed;
+        _waveMode = myJson.waveMode;
+        _waveDirection = myJson.waveDirection;
+        myJson.masses.forEach(function(jMass) {
+            var myMass = MASS.create(VECTOR.create(jMass.s.x, jMass.s.y));
+            myMass.v.x(jMass.v.x);
+            myMass.v.y(jMass.v.y);
+            myMass.a.x(jMass.a.x);
+            myMass.a.y(jMass.a.y);
+            _addMass(myMass);
+        });
+        myJson.springs.forEach(function(jSpring) {
+            var mySpring = SPRING.create(_masses[jSpring.m1], _masses[jSpring.m2], jSpring.restlength, jSpring.amplitude, jSpring.phase);
+            _addSpring(mySpring);
+        });
+    }
+    function _importModelFromURL()
+    {
+        var importStr = atob(window.location.href.split("#")[1]);
+        _importModel(importStr);
     }
     function _addMass(m)
     {
@@ -318,7 +368,9 @@ MODEL.instance = (function()
         masses: _masses,
         springs: _springs,
         exportModel: _exportModel,
+        exportModelToURL: _exportModelToURL,
         importModel: _importModel,
+        importModelFromURL: _importModelFromURL,
         addMass: _addMass,
         removeMass: _removeMass,
         addSpring: _addSpring,

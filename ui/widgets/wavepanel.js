@@ -27,7 +27,7 @@ WAVEPANEL.create = (function(x, y, w, h)
             var pp = 2*Math.PI * i / resolution;
             pp += MODEL.instance.wavePhase();
             var xx = Math.sin(pp);
-            xx *= amplitudeX;
+            xx *= amplitudeX * -1;
             xx += _x + _w/2;
             ctx.lineTo(xx, yy);
         }

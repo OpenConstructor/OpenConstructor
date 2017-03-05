@@ -55,7 +55,10 @@ VECTOR.create = (function(x, y)
         _x /= scalar;
         _y /= scalar;
     }
-
+    function _toJSON()
+    {
+        return {"x": _x, "y": _y};
+    }
     return {
         x: __x,
         y: __y,
@@ -64,7 +67,8 @@ VECTOR.create = (function(x, y)
         add: _add,
         sub: _sub,
         mul: _mul,
-        div: _div
+        div: _div,
+        toJSON: _toJSON
     };
 });    
 
