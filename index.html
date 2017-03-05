@@ -14,25 +14,6 @@
             border: 1px solid #000000;
         }
     </style>
-    <!-- The files making up the constructor, in dependency order -->
-    <script type="text/javascript" src="common/util.js"></script>
-    <script type="text/javascript" src="common/vector.js"></script>
-    <script type="text/javascript" src="model/mass.js"></script>
-    <script type="text/javascript" src="model/spring.js"></script>
-    <script type="text/javascript" src="model/model.js"></script>
-    <script type="text/javascript" src="controller/physics.js"></script>
-    <script type="text/javascript" src="controller/generators.js"></script>
-    <script type="text/javascript" src="controller/wave.js"></script>
-    <script type="text/javascript" src="ui/widgets/button.js"></script>
-    <script type="text/javascript" src="ui/widgets/dropdown.js"></script>
-    <script type="text/javascript" src="ui/widgets/slider.js"></script>
-    <script type="text/javascript" src="ui/widgets/wave.js"></script>
-    <script type="text/javascript" src="ui/widgets/gfkpanel.js"></script>
-    <script type="text/javascript" src="ui/widgets/menupanel.js"></script>
-    <script type="text/javascript" src="ui/widgets/modelpanel.js"></script>
-    <script type="text/javascript" src="ui/widgets/wavepanel.js"></script>
-    <script type="text/javascript" src="ui/widgets/rootpanel.js"></script>
-    <script type="text/javascript" src="ui/ui.js"></script>
     </head>
     <body>
         <!-- The canvas that the constructor will run in -->
@@ -45,80 +26,106 @@
             oncontextmenu="return false;"
             width="720" height="450">
         </canvas>
-
+        <!-- The files making up the constructor, in dependency order -->
+        <script type="text/javascript" src="common/util.js"></script>
+        <script type="text/javascript" src="common/vector.js"></script>
+        <script type="text/javascript" src="model/mass.js"></script>
+        <script type="text/javascript" src="model/spring.js"></script>
+        <script type="text/javascript" src="model/model.js"></script>
+        <script type="text/javascript" src="controller/physics.js"></script>
+        <script type="text/javascript" src="controller/generators.js"></script>
+        <script type="text/javascript" src="controller/wave.js"></script>
+        <script type="text/javascript" src="ui/widgets/button.js"></script>
+        <script type="text/javascript" src="ui/widgets/dropdown.js"></script>
+        <script type="text/javascript" src="ui/widgets/slider.js"></script>
+        <script type="text/javascript" src="ui/widgets/wave.js"></script>
+        <script type="text/javascript" src="ui/widgets/gfkpanel.js"></script>
+        <script type="text/javascript" src="ui/widgets/menupanel.js"></script>
+        <script type="text/javascript" src="ui/widgets/modelpanel.js"></script>
+        <script type="text/javascript" src="ui/widgets/wavepanel.js"></script>
+        <script type="text/javascript" src="ui/widgets/rootpanel.js"></script>
+        <script type="text/javascript" src="ui/ui.js"></script>
         <!-- Top-level glue code -->
         <script type="text/javascript">
             // default model
-            MODEL.instance.g(-0.02);
-            MODEL.instance.f(0.08);
-            MODEL.instance.k(3);
-            MODEL.instance.waveAmplitude(0.15);
-            MODEL.instance.waveSpeed(0.06);
-
-            m0 = MASS.create(VECTOR.create(2.315525, 0.766061));
-            m1 = MASS.create(VECTOR.create(1.767531, 0.778098));
-            m2 = MASS.create(VECTOR.create(0.835327, 0.798408));
-            m3 = MASS.create(VECTOR.create(0.256981, 0.719877));
-            m4 = MASS.create(VECTOR.create(0.776744, 0.106086));
-            m5 = MASS.create(VECTOR.create(1.320425, 0.506298));
-            m6 = MASS.create(VECTOR.create(2.140388, 0.0));
-            m7 = MASS.create(VECTOR.create(1.296868, 1.078139));
-            m8 = MASS.create(VECTOR.create(1.853856, 0.108938));
-            m9 = MASS.create(VECTOR.create(0.564718, 0.0));
-            MODEL.instance.addMass(m1);
-            MODEL.instance.addMass(m2);
-            MODEL.instance.addMass(m3);
-            MODEL.instance.addMass(m4);
-            MODEL.instance.addMass(m5);
-            MODEL.instance.addMass(m6);
-            MODEL.instance.addMass(m7);
-            MODEL.instance.addMass(m8);
-            MODEL.instance.addMass(m9);
-
-            s1  = SPRING.create(m0, m1, 0.550);
-            s2  = SPRING.create(m1, m2, 0.930);
-            s3  = SPRING.create(m2, m3, 0.580);
-            s4  = SPRING.create(m2, m5, 0.546);
-            s5  = SPRING.create(m5, m1, 0.519);
-            s6  = SPRING.create(m1, m7, 0.555);
-            s7  = SPRING.create(m7, m2, 0.563);
-            s8  = SPRING.create(m7, m5, 0.570);
-            s9  = SPRING.create(m5, m3, 1.09);
-            s10 = SPRING.create(m3, m7, 1.09);
-            s11 = SPRING.create(m7, m0, 1.07);
-            s12 = SPRING.create(m0, m5, 1.03);
-            s13 = SPRING.create(m0, m2, 1.48);
-            s14 = SPRING.create(m1, m3, 1.51);
-            s15 = SPRING.create(m3, m4, 0.795, 0.5, 4.963716);
-            s16 = SPRING.create(m1, m6, 0.778, 0.5, 6.201504);
-            s17 = SPRING.create(m6, m0, 0.802, 0.5, 4.963716);
-            s18 = SPRING.create(m0, m8, 0.789, 0.5, 1.796991);
-            s19 = SPRING.create(m8, m1, 0.771, 0.5, 3.336371);
-            s20 = SPRING.create(m2, m9, 0.795, 0.5, 0.0);
-            s21 = SPRING.create(m9, m3, 0.795, 0.5, 1.796991);
-            s22 = SPRING.create(m4, m2, 0.788, 0.5, 3.39292);
-            MODEL.instance.addSpring(s1);
-            MODEL.instance.addSpring(s2);
-            MODEL.instance.addSpring(s3);
-            MODEL.instance.addSpring(s4);
-            MODEL.instance.addSpring(s5);
-            MODEL.instance.addSpring(s6);
-            MODEL.instance.addSpring(s7);
-            MODEL.instance.addSpring(s8);
-            MODEL.instance.addSpring(s9);
-            MODEL.instance.addSpring(s10);
-            MODEL.instance.addSpring(s11);
-            MODEL.instance.addSpring(s12);
-            MODEL.instance.addSpring(s13);
-            MODEL.instance.addSpring(s14);
-            MODEL.instance.addSpring(s15);
-            MODEL.instance.addSpring(s16);
-            MODEL.instance.addSpring(s17);
-            MODEL.instance.addSpring(s18);
-            MODEL.instance.addSpring(s19);
-            MODEL.instance.addSpring(s20);
-            MODEL.instance.addSpring(s21);
-            MODEL.instance.addSpring(s22);
+            MODEL.instance.importModel('{"version":0, \
+                "g":-0.02, \
+                "f":0.113, \
+                "k":5.3, \
+                "width":5.475, \
+                "height":3.57, \
+                "gravityDirection":"gravity on", \
+                "surfaceFriction":0.7, \
+                "surfaceReflection":-0.75, \
+                "waveAmplitude":0.15, \
+                "wavePhase":0.11999999999999994, \
+                "waveSpeed":0.06, \
+                "waveMode":"auto reverse", \
+                "waveDirection":1, \
+                "masses":[ \
+                    {"s":{"x":1.750499570147691, "y":0.7554135719641994}, \
+                    "v":{"x":0.010396670975938842, "y":-0.018675110524989408}, \
+                    "a":{"x":-0.10832455506214488, "y":0.02183982923269993}, \
+                    "f":{"x":-0.10832455506214488, "y":0.02183982923269993}}, \
+                    {"s":{"x":0.8143431867485943, "y":0.7700184931721614}, \
+                    "v":{"x":0.04949556383183008, "y":0.037794087938637824}, \
+                    "a":{"x":0.08453605287430359, "y":0.055288345204614606}, \
+                    "f":{"x":0.08453605287430359, "y":0.055288345204614606}}, \
+                    {"s":{"x":0.23655202730264485, "y":0.7478260534766035}, \
+                    "v":{"x":0.028459931475753632, "y":0.05439471763022323}, \
+                    "a":{"x":0.05909228245379487, "y":-0.039285960711164455}, \
+                    "f":{"x":0.05909228245379487, "y":-0.039285960711164455}}, \
+                    {"s":{"x":0.6806472181818575, "y":0.0000037779324789727294}, \
+                    "v":{"x":-0.0012136445168939938, "y":0.0002321729963490406}, \
+                    "a":{"x":-0.07702209677372815, "y":-0.07899589456459076}, \
+                    "f":{"x":-0.07702209677372815, "y":-0.07899589456459076}}, \
+                    {"s":{"x":1.2989493048509524, "y":0.4972857598677362}, \
+                    "v":{"x":0.01797957799060217, "y":-0.0005710022945987695}, \
+                    "a":{"x":-0.060333392387647636, "y":0.014125828193676991}, \
+                    "f":{"x":-0.060333392387647636, "y":0.014125828193676991}}, \
+                    {"s":{"x":1.8915955542220217, "y":0.000011347315654083353}, \
+                    "v":{"x":-0.001128946260354464, "y":-0.0010026689943898961}, \
+                    "a":{"x":-0.027036558726106233, "y":-0.12011654679321412}, \
+                    "f":{"x":-0.027036558726106233, "y":-0.12011654679321412}}, \
+                    {"s":{"x":1.2815119546481435, "y":1.0679988270511467}, \
+                    "v":{"x":0.02667375491522965, "y":0.01031826571925057}, \
+                    "a":{"x":0.049838411387536065, "y":-0.027762683976993573}, \
+                    "f":{"x":0.049838411387536065, "y":-0.027762683976993573}}, \
+                    {"s":{"x":2.083791940539898, "y":0.03548767659775574}, \
+                    "v":{"x":0.06247664777444883, "y":-0.01755919659225326}, \
+                    "a":{"x":-0.011545748498310988, "y":0.020560497911721754}, \
+                    "f":{"x":-0.011545748498310988, "y":0.020560497911721754}}, \
+                    {"s":{"x":0.4654908270515556, "y":0.06018344762330983}, \
+                    "v":{"x":0.08776820716971893, "y":0.02234455503877207}, \
+                    "a":{"x":0.021099128204172018, "y":-0.07956410867437957}, \
+                    "f":{"x":0.021099128204172018, "y":-0.07956410867437957}}, \
+                    {"s":{"x":2.298090391126824, "y":0.740384683876986}, \
+                    "v":{"x":0.03059693265944378, "y":-0.021300429366038764}, \
+                    "a":{"x":0.03448981404102219, "y":0.02641638947583707}, \
+                    "f":{"x":0.03448981404102219, "y":0.02641638947583707}}], \
+                "springs":[ \
+                    {"m1":9, "m2":0, "restlength":0.55, "amplitude":0, "phase":0}, \
+                    {"m1":0, "m2":1, "restlength":0.93, "amplitude":0, "phase":0}, \
+                    {"m1":1, "m2":2, "restlength":0.58, "amplitude":0, "phase":0}, \
+                    {"m1":1, "m2":4, "restlength":0.546, "amplitude":0, "phase":0}, \
+                    {"m1":4, "m2":0, "restlength":0.519, "amplitude":0, "phase":0}, \
+                    {"m1":0, "m2":6, "restlength":0.555, "amplitude":0, "phase":0}, \
+                    {"m1":6, "m2":1, "restlength":0.563, "amplitude":0, "phase":0}, \
+                    {"m1":6, "m2":4, "restlength":0.57, "amplitude":0, "phase":0}, \
+                    {"m1":4, "m2":2, "restlength":1.09, "amplitude":0, "phase":0}, \
+                    {"m1":2, "m2":6, "restlength":1.09, "amplitude":0, "phase":0}, \
+                    {"m1":6, "m2":9, "restlength":1.07, "amplitude":0, "phase":0}, \
+                    {"m1":9, "m2":4, "restlength":1.03, "amplitude":0, "phase":0}, \
+                    {"m1":9, "m2":1, "restlength":1.48, "amplitude":0, "phase":0}, \
+                    {"m1":0, "m2":2, "restlength":1.51, "amplitude":0, "phase":0}, \
+                    {"m1":2, "m2":3, "restlength":0.795, "amplitude":0.5, "phase":4.963716},\
+                    {"m1":0, "m2":5, "restlength":0.778, "amplitude":0.5, "phase":6.201504},\
+                    {"m1":5, "m2":9, "restlength":0.802, "amplitude":0.5, "phase":4.963716},\
+                    {"m1":9, "m2":7, "restlength":0.789, "amplitude":0.5, "phase":1.796991},\
+                    {"m1":7, "m2":0, "restlength":0.771, "amplitude":0.5, "phase":3.336371},\
+                    {"m1":1, "m2":8, "restlength":0.795, "amplitude":0.5, "phase":0}, \
+                    {"m1":8, "m2":2, "restlength":0.795, "amplitude":0.5, "phase":1.796991},\
+                    {"m1":3, "m2":1, "restlength":0.788, "amplitude":0.5, "phase":3.39292}]}');
 
             // if a different model was specified in the url, load it
             if(window.location.href.indexOf("#") !== -1)

@@ -10,10 +10,14 @@ MENUPANEL.create = (function(x, y, w, h)
     var _w = w;
     var _h = h;
     var _children = [
-        BUTTON.create(x, y, w/3, h,
+        BUTTON.create(x, y, 64, h,
+            function(mouseButton) {
+                MODEL.instance.exportModelToURL();
+            },
+            function() {return "save"}),
+        BUTTON.create(x+64, y, (w-64)/3, h,
             function(mouseButton) {
                 MODEL.instance.selectedItem(null);
-                MODEL.instance.exportModelToURL();
                 switch (MODEL.instance.mode())
                 {
                 case MODEL.Modes.SIMULATE:
@@ -34,7 +38,7 @@ MENUPANEL.create = (function(x, y, w, h)
                 }
             },
             MODEL.instance.mode),
-        BUTTON.create(x+w/3, y, w/3, h,
+        BUTTON.create(x+(w-64)/3+64, y, (w-64)/3, h,
             function(mouseButton) {
                 switch (MODEL.instance.waveMode())
                 {
@@ -61,25 +65,29 @@ MENUPANEL.create = (function(x, y, w, h)
                 }
             },
             MODEL.instance.waveMode),
-        BUTTON.create(x+2*w/3, y, w/3, h,
-            function() {
-                MODEL.instance.g(MODEL.instance.g() * -1);
+        BUTTON.create(x+2*(w-64)/3+64, y, (w-64)/3, h,
+            function(mouseButton) {
+                switch (MODEL.instance.gravityDirection())
+                {
+                case MODEL.GravityDirections.DOWN:
+                    MODEL.instance.gravityDirection((mouseButton == 0)?
+                        MODEL.GravityDirections.OFF :
+                        MODEL.GravityDirections.UP);
+                    break;
+                case MODEL.GravityDirections.OFF:
+                    MODEL.instance.gravityDirection((mouseButton == 0)?
+                        MODEL.GravityDirections.UP :
+                        MODEL.GravityDirections.DOWN);
+                    break;
+                case MODEL.GravityDirections.UP:
+                    MODEL.instance.gravityDirection((mouseButton == 0)?
+                        MODEL.GravityDirections.DOWN :
+                        MODEL.GravityDirections.OFF);
+                    break;
+
+                }
             },
-            function() {
-                var g = MODEL.instance.g();
-                if (g < 0.0)
-                {
-                    return "gravity on";
-                }
-                else if (g > 0.0)
-                {
-                    return "gravity reversed";
-                }
-                else
-                {
-                    return "gravity off";
-                }
-            }),
+            MODEL.instance.gravityDirection)
     ];
 // public
     function __x(x)

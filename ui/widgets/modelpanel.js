@@ -275,7 +275,7 @@ MODELPANEL.create = (function(x, y, w, h)
             {
                 MODEL.instance.selectedItem(null);
                 // delete clicked object
-                var item = _getNearestItem(exy, _mouseSlopPx)
+                var item = _getNearestItem(exy, _mouseSlopPx);
                 if (item !== undefined)
                 {
                     MODEL.instance.removeMass(item) ||

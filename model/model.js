@@ -7,17 +7,23 @@ MODEL.Modes = {
     SIMULATE: "simulate",
     CONSTRUCT: "construct",
     DELETE: "delete"
-}
+};
 Object.freeze(MODEL.Modes);
 
 MODEL.WaveModes = {
-    AUTOREVERSE: "auto-reverse",
+    AUTOREVERSE: "auto reverse",
     FORWARD: "forward",
     REVERSE: "reverse",
     MANUAL: "manual"
-}
-
+};
 Object.freeze(MODEL.WaveModes);
+
+MODEL.GravityDirections = {
+    DOWN: "gravity on",
+    OFF: "gravity off",
+    UP: "gravity reverse"
+};
+Object.freeze(MODEL.GravityDirections);
 
 // model
 MODEL.instance = (function()
@@ -29,6 +35,7 @@ MODEL.instance = (function()
     var _k = 2;
     var _width = 5.475;
     var _height = 3.57;
+    var _gravityDirection = MODEL.GravityDirections.DOWN;
     var _surfaceFriction = 0.7;
     var _surfaceReflection = -0.75;
     var _waveAmplitude = 0.5;
@@ -98,6 +105,14 @@ MODEL.instance = (function()
             _height = height;
         }
         return _height;
+    }
+    function __gravityDirection(gravityDirection)
+    {
+        if (gravityDirection !== undefined)
+        {
+            _gravityDirection = gravityDirection;
+        }
+        return _gravityDirection;
     }
     function __surfaceFriction(surfaceFriction)
     {
@@ -186,6 +201,7 @@ MODEL.instance = (function()
                                "k": _k,
                                "width": _width,
                                "height": _height,
+                               "gravityDirection": _gravityDirection,
                                "surfaceFriction": _surfaceFriction,
                                "surfaceReflection": _surfaceReflection,
                                "waveAmplitude": _waveAmplitude,
@@ -211,6 +227,7 @@ MODEL.instance = (function()
         _k = myJson.k;
         _width = myJson.width;
         _height = myJson.height;
+        _gravityDirection = myJson.gravityDirection;
         _surfaceFriction = myJson.surfaceFriction;
         _surfaceReflection = myJson.surfaceReflection;
         _waveAmplitude = myJson.waveAmplitude;
@@ -308,7 +325,7 @@ MODEL.instance = (function()
         };
 
         _masses.forEach(function(mass, i) {
-            var distance = VECTOR.magSq(VECTOR.sub(s, mass.s))
+            var distance = VECTOR.magSq(VECTOR.sub(s, mass.s));
             if (distance < this.sqrSmallestDistance)
             {
                 this.sqrSmallestDistance = distance;
@@ -357,6 +374,7 @@ MODEL.instance = (function()
         k: __k,
         width: __width,
         height: __height,
+        gravityDirection: __gravityDirection,
         surfaceFriction: __surfaceFriction,
         surfaceReflection: __surfaceReflection,
         waveAmplitude: __waveAmplitude,
@@ -376,8 +394,8 @@ MODEL.instance = (function()
         addSpring: _addSpring,
         removeSpring: _removeSpring,
         findNearestMass: _findNearestMass,
-        findNearestSpring: _findNearestSpring,
-    }
+        findNearestSpring: _findNearestSpring
+    };
 })();
 // singleton
 

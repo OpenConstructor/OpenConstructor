@@ -23,7 +23,20 @@ PHYSICS.instance = (function()
     {
         MODEL.instance.masses.forEach(function(mass) {
             // "g"ravity
-            mass.f.y(mass.f.y() + MODEL.instance.g());
+            var gravity = undefined;
+            switch (MODEL.instance.gravityDirection())
+            {
+            case MODEL.GravityDirections.DOWN:
+                gravity = MODEL.instance.g();
+                break;
+            case MODEL.GravityDirections.UP:
+                gravity = -1 * MODEL.instance.g();
+                break;
+            case MODEL.GravityDirections.OFF:
+                gravity = 0;
+                break;
+            }
+            mass.f.y(mass.f.y() + gravity);
         });
     }
     function _fForce()
