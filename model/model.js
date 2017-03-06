@@ -1,8 +1,12 @@
 'use strict'
 
+// MODEL stores the vast majority of the constructor's state.  Its name is
+// doubly apt: in addition to representing the "model" made of springs and
+// masses, it is also the "model" in the model-view controller architecture
+// that the constructor uses.
 var MODEL = MODEL || {};
 
-// enums
+// Enum of simulation modes.
 MODEL.Modes = {
     SIMULATE: "simulate",
     CONSTRUCT: "construct",
@@ -10,6 +14,7 @@ MODEL.Modes = {
 };
 Object.freeze(MODEL.Modes);
 
+// Enum of wave modes.
 MODEL.WaveModes = {
     AUTOREVERSE: "auto reverse",
     FORWARD: "forward",
@@ -18,45 +23,68 @@ MODEL.WaveModes = {
 };
 Object.freeze(MODEL.WaveModes);
 
+// Enum of gravity modes.
 MODEL.GravityDirections = {
     DOWN: "gravity on",
     OFF: "gravity off",
     UP: "gravity reverse"
 };
+Object.freeze(MODEL.GravityDirections);
 
+// Enum for describing the last wall the model touched while auto-reversing.
 MODEL.Walls = {
     LEFT: "left",
     RIGHT: "right",
     UNKNOWN: "unknown"
 };
+Object.freeze(MODEL.Walls);
 
-Object.freeze(MODEL.GravityDirections);
-
-// model
+// Creates the model singleton.  This is the data-structure used all throughout
+// the constructor for passing state around.
 MODEL.instance = (function()
 {
 // private
+    // The human-readable name of the model, as christened by its creator.
     var _name = "untitled";
+    // The name of the person who created the model
     var _author = "yourname";
+    // Current simulation mode
     var _mode = MODEL.Modes.SIMULATE;
+    // Physical parameters of the model
     var _g = -0.1;
     var _f = 0.1;
     var _k = 2;
+    // Model area, measured in meters.
     var _width = 5.475;
     var _height = 3.57;
+    // More various parameters...
     var _gravityDirection = MODEL.GravityDirections.DOWN;
     var _surfaceFriction = 0.7;
     var _surfaceReflection = -0.75;
+    // Wave amplitude, ranging from 0 to 1.
     var _waveAmplitude = 0.5;
+    // Wave phase, measured in radians.  Increases when the wave is running
+    // forward and decreases when it is running backward.
     var _wavePhase = 0;
+    // Wave speed, measured in radians per frame.
     var _waveSpeed = 0.1;
     var _waveMode = MODEL.WaveModes.AUTOREVERSE;
+    // Wave direction.  This is a multiplier:  1 means it's running forwards,
+    // -1 means it's running backwards, and 0 means it's stopped (as in manual
+    // mode).
     var _waveDirection = 1;
+    // The last wall the model touched (used for auto-reverse).
     var _lastWall = MODEL.Walls.UNKNOWN;
+    // The mass/spring that's been selected (clicked) in the UI.
     var _selectedItem = undefined;
+    // The mass/spring that the mouse is hovering over in the UI.
     var _hoveredItem = undefined;
+    // Array of masses in the model.
     var _masses = [];
+    // Array of springs in the model.
     var _springs = [];
+    // Find whether the two masses (m1, m2) are connected by a spring.
+    // Return true if there is a spring connecting them, otherwise false.
     function _springExists(m1, m2)
     {
         _springs.forEach(function(spr) {
@@ -69,6 +97,9 @@ MODEL.instance = (function()
         return false;
     }
 // public
+    // Accessors for the various fields described above.
+    // Takes the new value (or undefined to leave unchanged).
+    // Returns the current value.
     function __name(name)
     {
         if (name !== undefined)
@@ -236,8 +267,15 @@ MODEL.instance = (function()
         }
         return _hoveredItem;
     }
+    // Returns a JSON string describing the current model geometry and state,
+    // suitable for saving to file.
     function _exportModel()
     {
+        // The "version" field describes the format of the exported JSON.  It
+        // started with 0 with the first release and is intended to increment
+        // if fields are added or removed in future revisions of the save file
+        // format.  This allows the constructor to be backwards-compatible with
+        // old saves.
         return JSON.stringify({"version": 0,
                                "name": _name,
                                "author": _author,
@@ -257,16 +295,25 @@ MODEL.instance = (function()
                                "masses": MODEL.instance.masses,
                                "springs": MODEL.instance.springs});
     }
+    // Appends the saved model state to the window URL, as base64-encoded JSON
+    // stored in a fragment identifier.  This lets you "save the model" by
+    // bookmarking that URL, and lets you share models by sharing the URL.
+    // Replaces any fragment identifier that was already present (like an
+    // earlier saved model).
+    // See: https://en.wikipedia.org/wiki/Fragment_identifier
     function _exportModelToURL()
     {
         var exportStr = _exportModel();
         window.location.href = window.location.href.split("#")[0] + "#" + btoa(exportStr);
     }
+    // Restores model from a JSON string (see _exportModel).
     function _importModel(jstr)
     {
-        var myJson = JSON.parse(jstr);
+        // Clear any masses and springs in the current model
         _masses.length = 0;
         _springs.length = 0;
+        // Restore model from string
+        var myJson = JSON.parse(jstr);
         _name = myJson.name;
         _author = myJson.author;
         _g = myJson.g;
@@ -295,11 +342,15 @@ MODEL.instance = (function()
             _addSpring(mySpring);
         });
     }
+    // Restores model from a base64-encoded JSON fragment identifier in the URL
+    // (see _exportModelToURL).
     function _importModelFromURL()
     {
         var importStr = atob(window.location.href.split("#")[1]);
         _importModel(importStr);
     }
+    // Add a mass into the model (takes a reference to an existing MASS that is
+    // not yet part of the model).
     function _addMass(m)
     {
         var i = _masses.indexOf(m);
@@ -308,14 +359,18 @@ MODEL.instance = (function()
             _masses.push(m);
         }
     }
+    // Remove a mass from the model (takes a reference to a MASS that is
+    // currently part of the model).  Returns true if the mass was removed, or
+    // false if it couldn't be removed because it wasn't in the model.
     function _removeMass(m)
     {
         var removed = false;
         var i = _masses.indexOf(m);
         if (i !== -1)
         {
+            // Delete the mass
             _masses.splice(i, 1);
-
+            // Also delete any springs that contain the mass
             var state = {
                 victimSprings: []
             }
@@ -333,8 +388,12 @@ MODEL.instance = (function()
         }
         return removed;
     }
+    // Add a spring into the model (takes a reference to an existing SPRING
+    // that is not yet part of the model).
     function _addSpring(s)
     {
+        // If the two masses are already connected by a spring in the model,
+        // don't add another connection between them.
         if (_springExists(s.m1, s.m2))
         {
             return;
@@ -342,6 +401,8 @@ MODEL.instance = (function()
         var i = _springs.indexOf(s);
         if (i === -1)
         {
+            // Also add the masses (at each end of the spring) if they aren't
+            // already part of the model.
             if (_masses.indexOf(s.m1) === -1)
             {
                 _addMass(s.m1);
@@ -353,6 +414,10 @@ MODEL.instance = (function()
             _springs.push(s);
         }
     }
+    // Remove a spring from the model (takes a reference to a SPRING that is
+    // currently part of the model).  The masses connected to the spring are
+    // not affected.  Returns true if the spring was removed, or false if it
+    // couldn't be removed because it wasn't in the model.
     function _removeSpring(s)
     {
         var removed = false;
@@ -364,12 +429,17 @@ MODEL.instance = (function()
         }
         return removed;
     }
+    // Find the mass in the model that is closest to the given vector (s).  s
+    // is measured in meters.
     function _findNearestMass(s)
     {
         return UTIL.findNearest(s, _masses, function(mass) {
             return mass.s;
         });
     }
+    // Find the spring in the model that is closest to the given vector (s).
+    // The "closest" spring is the one whose midpoint is closest to s.
+    // s is measured in meters.
     function _findNearestSpring(s)
     {
         return UTIL.findNearest(s, _springs, function(spring) {

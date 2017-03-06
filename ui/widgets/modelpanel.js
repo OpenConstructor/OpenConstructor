@@ -1,7 +1,13 @@
 'use strict'
 
+// MENUPANEL is the WIDGET at the center of the screen in which the model
+// is drawn.  The user can click and drag in this panel to interact with
+// the model.
 var MODELPANEL = MODELPANEL || {};
 
+// Creates the panel, with top-left corner at the specified coordinates (x, y)
+// measured in pixels from the top-left corner of the browser's client, and
+// with the specified width and height (w, h) in pixels.
 MODELPANEL.create = (function(x, y, w, h)
 {
 // private
@@ -9,13 +15,25 @@ MODELPANEL.create = (function(x, y, w, h)
     var _y = y;
     var _w = w;
     var _h = h;
+    // The current position of the mouse within the panel, in terms of the
+    // browser's client coordinates, stored as a VECTOR, measured in pixels.
     var _mousePosition = undefined;
+    // Whether a mouse button is currently being pressed.
     var _mouseDown = false;
+    // How close the mouse must be to a mass or spring before that item
+    // can be hovered or selected.  Measured as a distance in pixels.
     var _mouseSlopPx = 25;
-    //var _children = [];   // this widget doesn't have children
+    //var _children = [];   // MODELWIDGET can't have child WIDGETs.
+    // Conversion between metric units and screen units.
     var _pixelsPerMeter = 120;
+    // Color of the selected spring or mass (i.e. the item last clicked).
     var _selectionColor = "#6ab5ff";
+    // Color of the hovered spring or mass (i.e. the item that the mouse cursor
+    // is currently pointing at).
     var _hoverColor = "#0000ff";
+    // Given a position vector in pixels from top-left of client area (v),
+    // creates and returns a new vector representing the same point in metric
+    // units that can be processed by the MODEL and the PHYSICS engine.
     function _pixelsToMeters(v)
     {
         var vv = VECTOR.create(v.x(), v.y());
@@ -24,6 +42,9 @@ MODELPANEL.create = (function(x, y, w, h)
         vv.div(_pixelsPerMeter);
         return vv;
     }
+    // Given a position vector in meters from the model origin (v), creates and
+    // returns a new vector representing the same point in pixels from top-left
+    // of client area.
     function _metersToPixels(v)
     {
         var vv = VECTOR.mul(v, _pixelsPerMeter);
@@ -31,6 +52,7 @@ MODELPANEL.create = (function(x, y, w, h)
         vv.y(_y + _h - vv.y());
         return vv;
     }
+    // Draws the model's masses to the given drawing context (ctx).
     function _drawMasses(ctx)
     {
         var massRadius = 4;
@@ -72,6 +94,7 @@ MODELPANEL.create = (function(x, y, w, h)
             }
         });
     }
+    // Draws the model's springs to the given drawing context (ctx).
     function _drawSprings(ctx)
     {
         var muscleDotRadius = 1.5;
@@ -128,6 +151,10 @@ MODELPANEL.create = (function(x, y, w, h)
             }
         });
     }
+    // If a spring is currently being constructed, draw a line between the
+    // spring's starting point and the current mouse position.  This is called
+    // "rubberbanding".
+    // See:  http://printwiki.org/Rubberbanding
     function _drawRubberbanding(ctx)
     {
         var item = MODEL.instance.selectedItem();
@@ -147,6 +174,10 @@ MODELPANEL.create = (function(x, y, w, h)
             ctx.closePath();
         }
     }
+    // Given a position vector in pixels from top-left of client area (exy),
+    // find the nearest mass or spring in the model.  If it is within a certain
+    // distance in pixels (maxDistanceInPixels), return the item.  Otherwise,
+    // return undefined.
     function _getNearestItem(exy, maxDistanceInPixels)
     {
         var mxy = _pixelsToMeters(exy);
@@ -162,6 +193,7 @@ MODELPANEL.create = (function(x, y, w, h)
         }
     }
 // public
+    // Accessors
     function __x(x)
     {
         if (x !== undefined)
@@ -194,6 +226,8 @@ MODELPANEL.create = (function(x, y, w, h)
         }
         return _h;
     }
+    // Draw the MODELPANEL to the given drawing context (ctx).  Called once
+    // per frame.
     function _draw(ctx)
     {
         UTIL.drawBoundingRectangle(ctx, _x, _y, _w, _h);
@@ -201,9 +235,10 @@ MODELPANEL.create = (function(x, y, w, h)
         _drawRubberbanding(ctx);
         _drawMasses(ctx);
     }
+    // Called by a mouse event (e) at client coordinates (exy).
     function _signal(e, exy)
     {
-        // Actions generic across all modes
+        // Actions generic across all modes (simulate, construct, ...)
         switch (e.type)
         {
             case "mousedown":
@@ -225,6 +260,10 @@ MODELPANEL.create = (function(x, y, w, h)
                         MODEL.instance.selectedItem().isFreeMass !== undefined)
                     {
                         // stop dragging
+                        // TODO:  Regardless of whether the mass was originally
+                        // free, it is converted back to a free mass here.
+                        // When real support for fixed masses is added to the
+                        // constructor, this line will need to change.
                         MODEL.instance.selectedItem().isFreeMass(true);
                     }
                 }
@@ -236,10 +275,18 @@ MODELPANEL.create = (function(x, y, w, h)
                 // drag
                 if (_mouseDown && MODEL.instance.selectedItem())
                 {
-                    if (MODEL.instance.selectedItem().s)
+                    // Note:  this is not calling isFreeMass, just checking if
+                    // it exists. If it does, this item is a mass.  This is a
+                    // slightly hacky way of checking whether the selected item
+                    // is a spring or a mass.
+                    if (MODEL.instance.selectedItem().isFreeMass)
                     {
+                        // It's a mass, start dragging.
                         var mxy = _pixelsToMeters(exy);
                         MODEL.instance.selectedItem().s.set(mxy.x(), mxy.y());
+                        // When you're dragging a mass, the mass is temporarily
+                        // converted to a fixed mass so the physics engine
+                        // doesn't yank it away from you.
                         MODEL.instance.selectedItem().isFreeMass(false);
                     }
                 }
@@ -262,9 +309,11 @@ MODELPANEL.create = (function(x, y, w, h)
                 var clickedItem = _getNearestItem(exy, _mouseSlopPx);
                 if (!clickedItem)
                 {
+                    // clicked empty space
                     if (MODEL.instance.selectedItem() &&
                         MODEL.instance.selectedItem().isFreeMass !== undefined)
                     {
+                        // connect selected mass with new mass
                         var mass = MASS.create(_pixelsToMeters(exy));
                         MODEL.instance.addMass(mass);
                         var spring = SPRING.create(MODEL.instance.selectedItem(), mass);
@@ -273,6 +322,7 @@ MODELPANEL.create = (function(x, y, w, h)
                     }
                     else
                     {
+                        // create new mass
                         var mass = MASS.create(_pixelsToMeters(exy));
                         MODEL.instance.addMass(mass);
                         MODEL.instance.selectedItem(mass);
@@ -282,6 +332,7 @@ MODELPANEL.create = (function(x, y, w, h)
                 {
                     if (clickedItem.isFreeMass !== undefined)
                     {
+                        // clicked a mass
                         if (MODEL.instance.selectedItem() &&
                             MODEL.instance.selectedItem().isFreeMass !== undefined)
                         {
@@ -309,6 +360,7 @@ MODELPANEL.create = (function(x, y, w, h)
         case MODEL.Modes.DELETE:
             if (e.type === "mousedown" && e.button === 0)
             {
+                // deselect all
                 MODEL.instance.selectedItem(null);
                 // delete clicked object
                 var item = _getNearestItem(exy, _mouseSlopPx);

@@ -1,7 +1,19 @@
 'use strict'
 
+// SLIDER is a WIDGET that displays (and allows users to set) a value
+// through calls to an accessor function.
 var SLIDER = SLIDER || {};
 
+// Creates the slider, with top-left corner at the specified coordinates (x, y)
+// measured in pixels from the top-left corner of the browser's client, and
+// with the specified width and height (w, h) in pixels.  Takes an accessor
+// function (accessorFn), which is called to set the new value when the slider
+// is moved, and is also called to retrieve the current value when the slider
+// is displayed.  The slider's minimum and maximum value (min, max) are
+// specified.  The slider linearly interpolates between these two values.
+// There is also an optional parameter describing whether the slider grows from
+// the bottom of the screen up (invert = false/undefined) or from the top of
+// the screen down (invert = true).
 SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
 {
 // private
@@ -14,8 +26,9 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
     var _max = max;
     var _mouseDown = false;
     var _invert = (invert !== undefined)? invert : false;
-    //var _children = [];   // this widget doesn't have children
+    //var _children = [];   // SLIDER WIDGET can't have child WIDGETS.
 // public
+    // Accessors
     function __x(x)
     {
         if (x !== undefined)
@@ -48,6 +61,8 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
         }
         return _h;
     }
+    // Draw the slider to the specified drawing context (ctx).  Called once per
+    // frame.
     function _draw(ctx)
     {
         UTIL.drawBoundingRectangle(ctx, _x, _y, _w, _h);
@@ -80,6 +95,7 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
         ctx.fill();
         ctx.closePath();
     }
+    // Called by a mouse event (e) at client coordinates (exy).
     function _signal(e, exy)
     {
         switch (e.type)

@@ -1,7 +1,16 @@
 'use strict'
 
+// BUTTON is a WIDGET that calls a user-specified callback function when
+// clicked.
 var BUTTON = BUTTON || {};
 
+// Creates the button, with top-left corner at the specified coordinates (x, y)
+// measured in pixels from the top-left corner of the browser's client, and
+// with the specified width and height (w, h) in pixels.  Takes a callback
+// function that is called when the button is clicked (clickFn).  This callback
+// function is passed one parameter, the button that was clicked (0/1/2).  Also
+// takes another callback function that is called to determine the button's
+// caption (captionFn).
 BUTTON.create = (function(x, y, w, h, clickFn, captionFn)
 {
 // private
@@ -11,8 +20,9 @@ BUTTON.create = (function(x, y, w, h, clickFn, captionFn)
     var _h = h;
     var _clickFn = clickFn;
     var _captionFn = captionFn;
-    //var _children = [];   // this widget doesn't have children
+    //var _children = [];   // BUTTON WIDGET can't have child WIDGETS.
 // public
+    // accessors
     function __x(x)
     {
         if (x !== undefined)
@@ -45,6 +55,8 @@ BUTTON.create = (function(x, y, w, h, clickFn, captionFn)
         }
         return _h;
     }
+    // Draw the button to the specified drawing context (ctx).  Called once per
+    // frame.
     function _draw(ctx)
     {
         UTIL.drawBoundingRectangle(ctx, _x, _y, _w, _h);
@@ -56,7 +68,8 @@ BUTTON.create = (function(x, y, w, h, clickFn, captionFn)
             ctx.fillText(_captionFn(), _x + _w/2, _y + _h/2 + 16/2);
         }
     }
-    function _signal(e, xy)
+    // Called by a mouse event (e) at client coordinates (exy).
+    function _signal(e, exy)
     {
         if (_clickFn !== undefined && e.type === "mousedown")
         {
