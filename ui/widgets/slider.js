@@ -24,7 +24,7 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
     var _accessorFn = accessorFn;
     var _min = min;
     var _max = max;
-    var _mouseDown = false;
+    var _mouseDown = null;
     var _invert = (invert !== undefined)? invert : false;
     //var _children = [];   // SLIDER WIDGET can't have child WIDGETS.
 // public
