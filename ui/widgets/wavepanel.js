@@ -260,11 +260,24 @@ WAVEPANEL.create = (function(x, y, w, h)
                 // hover
                 MODEL.instance.hoveredItem(nearestItem || null);
                 // drag
-                if (_mouseDown && MODEL.instance.selectedItem())
+                if (_mouseDown)
                 {
                     var [amplitude, phase] = _barCoordsToMuscleParams(exy);
-                    MODEL.instance.selectedItem().amplitude(amplitude);
-                    MODEL.instance.selectedItem().phase(phase);
+                    if (MODEL.instance.selectedItem())
+                    {
+                        // dragging muscle
+                        MODEL.instance.selectedItem().amplitude(amplitude);
+                        MODEL.instance.selectedItem().phase(phase);
+                    }
+                    else
+                    {
+                        // dragging empty space:  adjust wave amplitude
+                        if (amplitude <= 0)
+                        {
+                            amplitude = 0;
+                        }
+                        MODEL.instance.waveAmplitude(amplitude);
+                    }
                 }
                 break;
             };
