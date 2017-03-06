@@ -26,6 +26,8 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
     var _max = max;
     var _mouseDown = false;
     var _invert = (invert !== undefined)? invert : false;
+
+    var start = null;
     //var _children = [];   // SLIDER WIDGET can't have child WIDGETS.
 // public
     // Accessors
@@ -101,18 +103,22 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
         switch (e.type)
         {
         case "mouseup":
-            _mouseDown = false;
+            _mouseDown = null;
             break;
         case "mousedown":
-            _mouseDown = true;
-            // fall through
+            _mouseDown = {
+              pos: exy.y(),
+              val: _accessorFn()
+            };
+
         case "mousemove":
             if (_mouseDown)
             {
-                var proportion = (_h - exy.y() + _y) / (1.0 * _h);
+                var delta = (exy.y() - _mouseDown.pos)/(1.0 * _h);
+                var proportion = _mouseDown.val - delta;
                 if (_invert)
                 {
-                    proportion = 1 - proportion;
+                    proportion = _mouseDown.val + delta;
                 }
                 var scaled = proportion * (_max-_min) + _min;
                 _accessorFn(scaled);
