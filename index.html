@@ -8,6 +8,21 @@
     <style>
         body {
             background-color: #FFFFFF;
+            font-family: Verdana, sans-serif;
+            font-size: 16px;
+        }
+        span {
+            font-family: Verdana, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        input {
+            background-color: #FFFFFF;
+            /*border: none;*/
+            border-style: none none solid none;
+            font-family: Verdana, sans-serif;
+            font-size: 16px;
+            font-weight: bold;
         }
         canvas {
             background-color: #FFFFFF;
@@ -19,13 +34,19 @@
         <!-- The canvas that the constructor will run in -->
         <!-- 720x450 - original SC canvas -->
         <!-- 657x428 - original SC model area -->
-        <span style="font-weight: bold; font-family: Verdana"><span style="color:#6ab5ff">community</span>constructor</span>
+        <span><span style="color:#6ab5ff">community</span>constructor</span>
         <br />
         <canvas
             id="viewport"
             oncontextmenu="return false;"
             width="720" height="450">
         </canvas>
+        <br />
+        <div style="position: absolute; width: 720px; text-align: center">
+            <input id="nameField" style="width:45%; text-align:right" type="text" value="">
+            <span style="color: #6ab5ff">by</span>
+            <input id="authorField" style="width:45%; text-align:left" type="text" value="">
+        </div>
         <!-- The files making up the constructor, in dependency order -->
         <script type="text/javascript" src="common/util.js"></script>
         <script type="text/javascript" src="common/vector.js"></script>
@@ -49,6 +70,8 @@
         <script type="text/javascript">
             // default model
             MODEL.instance.importModel('{"version":0, \
+                "name":"daintywalker", \
+                "author":"ed", \
                 "g":-0.02, \
                 "f":0.137, \
                 "k":6.25, \
@@ -133,7 +156,7 @@
                 MODEL.instance.importModelFromURL();
             }
 
-            // set up
+            // one-time initialization stuff
             UI.instance.initialize();
 
             // function to draw one frame
@@ -149,6 +172,8 @@
                 }
                 window.requestAnimationFrame(_loop);
             }
+
+            // hook up event listeners for textboxes
 
             // start drawing frames
             _loop();

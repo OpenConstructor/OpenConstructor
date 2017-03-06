@@ -36,6 +36,8 @@ Object.freeze(MODEL.GravityDirections);
 MODEL.instance = (function()
 {
 // private
+    var _name = "untitled";
+    var _author = "yourname";
     var _mode = MODEL.Modes.SIMULATE;
     var _g = -0.1;
     var _f = 0.1;
@@ -67,6 +69,22 @@ MODEL.instance = (function()
         return false;
     }
 // public
+    function __name(name)
+    {
+        if (name !== undefined)
+        {
+            _name = name;
+        }
+        return _name;
+    }
+    function __author(author)
+    {
+        if (author !== undefined)
+        {
+            _author = author;
+        }
+        return _author;
+    }
     function __mode(mode)
     {
         if (mode !== undefined)
@@ -221,6 +239,8 @@ MODEL.instance = (function()
     function _exportModel()
     {
         return JSON.stringify({"version": 0,
+                               "name": _name,
+                               "author": _author,
                                "g": _g,
                                "f": _f,
                                "k": _k,
@@ -247,6 +267,8 @@ MODEL.instance = (function()
         var myJson = JSON.parse(jstr);
         _masses.length = 0;
         _springs.length = 0;
+        _name = myJson.name;
+        _author = myJson.author;
         _g = myJson.g;
         _f = myJson.f;
         _k = myJson.k;
@@ -355,6 +377,8 @@ MODEL.instance = (function()
         });
     }
     return {
+        name: __name,
+        author: __author,
         mode: __mode,
         g: __g,
         f: __f,
