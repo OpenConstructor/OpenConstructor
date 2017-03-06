@@ -14,6 +14,9 @@ communityconstructor has not yet reached feature parity with the latest versions
  - `MODEL.instance.selectedItem().phase(Math.PI/2)` - set phase of selected muscle to pi/2
  - For a complete list of properties that you can set this way, see `model.js`.
  
+## Problem?
+communityconstructor is an alpha, so you will encounter bugs and rough edges.  Please report them via the github issue tracker, the sodaplay facebook group, or via Peter's base64-encoded email address `ZWRsaW5mYW5AZ21haWwuY29t`.  Please include as much detail as possible so we can reproduce the issue.  Feature requests are also welcome.
+
 # For developers
 communityconstructor is intended to be simple to understand and to run.  It weighs in under 2000 lines of JS and has no external dependencies.  It is heavily commented and its architecture is kept relatively simple, with the goal of being understandable by anyone who wants to know how it works, and maintainable by anyone who wants to contribute.
 ## Design goals
