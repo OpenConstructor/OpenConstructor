@@ -114,12 +114,12 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
             if (_mouseDown)
             {
                 var delta = (exy.y() - _mouseDown.pos)/(1.0 * _h);
-                var proportion = _mouseDown.val - delta;
+                var scaledDelta = (_max-_min) * delta;
+                var scaled = _mouseDown.val - scaledDelta;
                 if (_invert)
                 {
-                    proportion = _mouseDown.val + delta;
+                    scaled = _mouseDown.val + scaledDelta;
                 }
-                var scaled = proportion * (_max-_min) + _min;
                 _accessorFn(scaled);
             }
             break;
