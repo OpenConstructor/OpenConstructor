@@ -125,7 +125,6 @@ PHYSICS.instance = (function()
                 // constantly switch direction as long as they are touching a
                 // wall.
                 if (MODEL.instance.waveMode() === MODEL.WaveModes.AUTOREVERSE)
-
                 {
                     if (mass.s.x() <= 0)
                     {

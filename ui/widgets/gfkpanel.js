@@ -84,11 +84,7 @@ GFKPANEL.create = (function(x, y, w, h)
     {
         // Delegate to children
         _children.forEach(function(child) {
-            if (UTIL.inBounds(exy.x(), exy.y(),
-                            child.x(), child.y(), child.w(), child.h()))
-            {
-                child.signal(e, exy);
-            }
+            child.signal(e, exy);
         });
     }
     return {

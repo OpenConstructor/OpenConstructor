@@ -104,16 +104,19 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
             _mouseDown = null;
             break;
         case "mousedown":
-            // Save the position of the last mouse click, but don't update the
-            // slider yet.  Sliders are updated when they are dragged, not when
-            // they are clicked.
-            _mouseDown = {
-              // The y-coordinate of the mouse click, in client coordinates.
-              pos: exy.y(),
-              // The current value of the slider, snapshotted at the moment the
-              // slider was clicked.
-              val: _accessorFn()
-            };
+            if (UTIL.inBounds(exy.x(), exy.y(), _x, _y, _w, _h))
+            {
+                // Save the position of the last mouse click, but don't update the
+                // slider yet.  Sliders are updated when they are dragged, not when
+                // they are clicked.
+                _mouseDown = {
+                    // The y-coordinate of the mouse click, in client coordinates.
+                    pos: exy.y(),
+                    // The current value of the slider, snapshotted at the moment the
+                    // slider was clicked.
+                    val: _accessorFn()
+                };
+            }
         case "mousemove":
             // If we're dragging, update the slider value.
             if (_mouseDown)

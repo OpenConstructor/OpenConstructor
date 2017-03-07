@@ -172,3 +172,14 @@ VECTOR.equal = function(v1, v2)
     var [x2, y2] = v2.get();
     return (x1 == x2) && (y1 == y2);
 }
+// Finds the point in the bounding box (x, y, w, h) that is nearest to the
+// specified vector (v).
+VECTOR.clamp = function(v, x, y, w, h)
+{
+    var [vx, vy] = v.get();
+    vx = Math.max(vx, x);
+    vx = Math.min(vx, x+w);
+    vy = Math.max(vy, y);
+    vy = Math.min(vy, y+h);
+    return VECTOR.create(vx, vy);
+}

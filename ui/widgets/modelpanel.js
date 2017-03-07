@@ -158,12 +158,11 @@ MODELPANEL.create = (function(x, y, w, h)
     function _drawRubberbanding(ctx)
     {
         var item = MODEL.instance.selectedItem();
-        if (MODEL.instance.mode() === MODEL.Modes.CONSTRUCT &&
-            item && item.isFreeMass !== undefined)
+        if (MODEL.instance.mode() === MODEL.Modes.CONSTRUCT && MASS.isMass(item))
         {
             var [x1, y1] = _metersToPixels(item.s).get();
             item = MODEL.instance.hoveredItem();
-            var [x2, y2] = (item && item.isFreeMass)?
+            var [x2, y2] = (MASS.isMass(item))?
                                 _metersToPixels(item.s).get() :
                                 _mousePosition.get();
             ctx.beginPath();
@@ -242,29 +241,34 @@ MODELPANEL.create = (function(x, y, w, h)
         switch (e.type)
         {
             case "mousedown":
-                if (e.button == 0)
+                if (UTIL.inBounds(exy.x(), exy.y(), _x, _y, _w, _h))
                 {
-                    _mouseDown = true;
-                }
-                else
-                {
-                    // deselect on right-click
-                    MODEL.instance.selectedItem(null);
+                    if (e.button == 0)
+                    {
+                        _mouseDown = true;
+                    }
+                    else
+                    {
+                        // deselect on right-click
+                        MODEL.instance.selectedItem(null);
+                    }
                 }
                 break;
             case "mouseup":
                 if (e.button == 0)
                 {
                     _mouseDown = false;
-                    if (MODEL.instance.selectedItem() &&
-                        MODEL.instance.selectedItem().isFreeMass !== undefined)
+                    if (UTIL.inBounds(exy.x(), exy.y(), _x, _y, _w, _h))
                     {
-                        // stop dragging
-                        // TODO:  Regardless of whether the mass was originally
-                        // free, it is converted back to a free mass here.
-                        // When real support for fixed masses is added to the
-                        // constructor, this line will need to change.
-                        MODEL.instance.selectedItem().isFreeMass(true);
+                        if (MASS.isMass(MODEL.instance.selectedItem()))
+                        {
+                            // stop dragging
+                            // TODO:  Regardless of whether the mass was originally
+                            // free, it is converted back to a free mass here.
+                            // When real support for fixed masses is added to the
+                            // constructor, this line will need to change.
+                            MODEL.instance.selectedItem().isFreeMass(true);
+                        }
                     }
                 }
                 break;
@@ -273,22 +277,17 @@ MODELPANEL.create = (function(x, y, w, h)
                 // hover
                 MODEL.instance.hoveredItem(_getNearestItem(exy, _mouseSlopPx) || null);
                 // drag
-                if (_mouseDown && MODEL.instance.selectedItem())
+                if (_mouseDown && MASS.isMass(MODEL.instance.selectedItem()))
                 {
-                    // Note:  this is not calling isFreeMass, just checking if
-                    // it exists. If it does, this item is a mass.  This is a
-                    // slightly hacky way of checking whether the selected item
-                    // is a spring or a mass.
-                    if (MODEL.instance.selectedItem().isFreeMass)
-                    {
-                        // It's a mass, start dragging.
-                        var mxy = _pixelsToMeters(exy);
-                        MODEL.instance.selectedItem().s.set(mxy.x(), mxy.y());
-                        // When you're dragging a mass, the mass is temporarily
-                        // converted to a fixed mass so the physics engine
-                        // doesn't yank it away from you.
-                        MODEL.instance.selectedItem().isFreeMass(false);
-                    }
+                    // It's a mass, start dragging.  If the mouse goes outside
+                    // the model window, drag to the nearest point in the model
+                    // window.
+                    var mxy = _pixelsToMeters(VECTOR.clamp(exy, x, y, w, h));
+                    MODEL.instance.selectedItem().s.set(mxy.x(), mxy.y());
+                    // When you're dragging a mass, the mass is temporarily
+                    // converted to a fixed mass so the physics engine doesn't
+                    // yank it away from you.
+                    MODEL.instance.selectedItem().isFreeMass(false);
                 }
                 break;
         }
@@ -297,77 +296,84 @@ MODELPANEL.create = (function(x, y, w, h)
         switch (MODEL.instance.mode())
         {
         case MODEL.Modes.SIMULATE:
-            if (e.type === "mousedown" && e.button === 0)
+            if (UTIL.inBounds(exy.x(), exy.y(), _x, _y, _w, _h))
             {
-                // select clicked object
-                MODEL.instance.selectedItem(_getNearestItem(exy, _mouseSlopPx) || null);
+                if (e.type === "mousedown" && e.button === 0)
+                {
+                    // select clicked object
+                    MODEL.instance.selectedItem(_getNearestItem(exy, _mouseSlopPx) || null);
+                }
             }
             break;
         case MODEL.Modes.CONSTRUCT:
-            if (e.type === "mousedown" && e.button === 0)
+            if (UTIL.inBounds(exy.x(), exy.y(), _x, _y, _w, _h))
             {
-                var clickedItem = _getNearestItem(exy, _mouseSlopPx);
-                if (!clickedItem)
+                if (e.type === "mousedown" && e.button === 0)
                 {
-                    // clicked empty space
-                    if (MODEL.instance.selectedItem() &&
-                        MODEL.instance.selectedItem().isFreeMass !== undefined)
+                    var clickedItem = _getNearestItem(exy, _mouseSlopPx);
+                    if (!clickedItem)
                     {
-                        // connect selected mass with new mass
-                        var mass = MASS.create(_pixelsToMeters(exy));
-                        MODEL.instance.addMass(mass);
-                        var spring = SPRING.create(MODEL.instance.selectedItem(), mass);
-                        MODEL.instance.addSpring(spring);
-                        MODEL.instance.selectedItem(mass);
-                    }
-                    else
-                    {
-                        // create new mass
-                        var mass = MASS.create(_pixelsToMeters(exy));
-                        MODEL.instance.addMass(mass);
-                        MODEL.instance.selectedItem(mass);
-                    }
-                }
-                else
-                {
-                    if (clickedItem.isFreeMass !== undefined)
-                    {
-                        // clicked a mass
-                        if (MODEL.instance.selectedItem() &&
-                            MODEL.instance.selectedItem().isFreeMass !== undefined)
+                        // clicked empty space
+                        if (MASS.isMass(MODEL.instance.selectedItem()))
                         {
-                            if (clickedItem != MODEL.instance.selectedItem())
-                            {
-                                var spring = SPRING.create(clickedItem,
-                                                           MODEL.instance.selectedItem());
-                                MODEL.instance.addSpring(spring);
-                            }
-                            MODEL.instance.selectedItem(clickedItem);
+                            // connect selected mass with new mass
+                            var mass = MASS.create(_pixelsToMeters(exy));
+                            MODEL.instance.addMass(mass);
+                            var spring = SPRING.create(MODEL.instance.selectedItem(), mass);
+                            MODEL.instance.addSpring(spring);
+                            MODEL.instance.selectedItem(mass);
                         }
                         else
                         {
-                            MODEL.instance.selectedItem(clickedItem);
+                            // create new mass
+                            var mass = MASS.create(_pixelsToMeters(exy));
+                            MODEL.instance.addMass(mass);
+                            MODEL.instance.selectedItem(mass);
                         }
                     }
                     else
                     {
-                        // clicked a spring
-                        MODEL.instance.selectedItem(clickedItem);
+                        if (MASS.isMass(clickedItem))
+                        {
+                            // clicked a mass
+                            if (MASS.isMass(MODEL.instance.selectedItem()))
+                            {
+                                if (clickedItem != MODEL.instance.selectedItem())
+                                {
+                                    var spring = SPRING.create(clickedItem,
+                                                               MODEL.instance.selectedItem());
+                                    MODEL.instance.addSpring(spring);
+                                }
+                                MODEL.instance.selectedItem(clickedItem);
+                            }
+                            else
+                            {
+                                MODEL.instance.selectedItem(clickedItem);
+                            }
+                        }
+                        else
+                        {
+                            // clicked a spring
+                            MODEL.instance.selectedItem(clickedItem);
+                        }
                     }
                 }
             }
             break;
         case MODEL.Modes.DELETE:
-            if (e.type === "mousedown" && e.button === 0)
+            if (UTIL.inBounds(exy.x(), exy.y(), _x, _y, _w, _h))
             {
-                // deselect all
-                MODEL.instance.selectedItem(null);
-                // delete clicked object
-                var item = _getNearestItem(exy, _mouseSlopPx);
-                if (item !== undefined)
+                if (e.type === "mousedown" && e.button === 0)
                 {
-                    MODEL.instance.removeMass(item) ||
-                        MODEL.instance.removeSpring(item);
+                    // deselect all
+                    MODEL.instance.selectedItem(null);
+                    // delete clicked object
+                    var item = _getNearestItem(exy, _mouseSlopPx);
+                    if (item !== undefined)
+                    {
+                        MODEL.instance.removeMass(item) ||
+                            MODEL.instance.removeSpring(item);
+                    }
                 }
             }
             break;

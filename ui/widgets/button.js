@@ -71,9 +71,12 @@ BUTTON.create = (function(x, y, w, h, clickFn, captionFn)
     // Called by a mouse event (e) at client coordinates (exy).
     function _signal(e, exy)
     {
-        if (_clickFn !== undefined && e.type === "mousedown")
+        if (UTIL.inBounds(exy.x(), exy.y(), _x, _y, _w, _h))
         {
-            _clickFn(e.button);
+            if (_clickFn !== undefined && e.type === "mousedown")
+            {
+                _clickFn(e.button);
+            }
         }
     }
     return {

@@ -22,9 +22,6 @@ WAVEPANEL.create = (function(x, y, w, h)
         // Right-hand dragbar
         BUTTON.create(x+w-10, y, 10, h-42, function(){}),
     ];
-    // The current position of the mouse within the panel, in terms of the
-    // browser's client coordinates, stored as a VECTOR, measured in pixels.
-    var _mousePosition = undefined;
     // Whether a mouse button is currently being pressed.
     var _mouseDown = false;
     // How close the mouse must be to a muscle bar before the muscle can be
@@ -239,13 +236,17 @@ WAVEPANEL.create = (function(x, y, w, h)
     // Called by a mouse event (e) at client coordinates (exy).
     function _signal(e, exy)
     {
-        if (UTIL.inBounds(exy.x(), exy.y(), _x+10, _y, _w-20, _h))
+        // Delegate to children
+        _children.forEach(function(child) {
+            child.signal(e, exy);
+        });
+        // central wave view
+        var nearestItem = _getNearestMuscleBar(exy, _mouseSlopPx);
+        switch (e.type)
         {
-            // central wave view
-            var nearestItem = _getNearestMuscleBar(exy, _mouseSlopPx);
-            switch (e.type)
+        case "mousedown":
+            if (UTIL.inBounds(exy.x(), exy.y(), _x+10, _y, _w-20, _h))
             {
-            case "mousedown":
                 if (e.button == 0)
                 {
                     _mouseDown = true;
@@ -264,52 +265,43 @@ WAVEPANEL.create = (function(x, y, w, h)
                     // deselect on right-click
                     MODEL.instance.selectedItem(null);
                 }
-                break;
-            case "mouseup":
-                _mouseDown = false;
-                break;
-            case "mousemove":
-                _mousePosition = exy;
-                // hover
+            }
+            break;
+        case "mouseup":
+            _mouseDown = false;
+            break;
+        case "mousemove":
+            // hover
+            if (UTIL.inBounds(exy.x(), exy.y(), _x+10, _y, _w-20, _h))
+            {
                 MODEL.instance.hoveredItem(nearestItem || null);
-                // drag
-                if (_mouseDown)
+            }
+            // drag
+            if (_mouseDown)
+            {
+                var [amplitude, phase] = _barCoordsToMuscleParams(VECTOR.clamp(exy, _x+10, _y, _w-20, _h));
+                if (MODEL.instance.selectedItem())
                 {
-                    var [amplitude, phase] = _barCoordsToMuscleParams(exy);
-                    if (MODEL.instance.selectedItem())
-                    {
-                        // dragging muscle
-                        MODEL.instance.selectedItem().amplitude(amplitude);
-                        MODEL.instance.selectedItem().phase(phase);
-                    }
-                    else
-                    {
-                        // dragging empty space:  adjust wave amplitude
-                        if (amplitude <= 0)
-                        {
-                            amplitude = 0;
-                        }
-                        MODEL.instance.waveAmplitude(amplitude);
-                    }
+                    // dragging muscle
+                    MODEL.instance.selectedItem().amplitude(amplitude);
+                    MODEL.instance.selectedItem().phase(phase);
                 }
-                break;
-            };
+                else if (UTIL.inBounds(exy.x(), exy.y(), _x+10, _y, _w-20, _h))
+                {
+                    // dragging empty space:  adjust wave amplitude
+                    if (amplitude <= 0)
+                    {
+                        amplitude = 0;
+                    }
+                    MODEL.instance.waveAmplitude(amplitude);
+                }
+            }
+            break;
         }
-        else if (UTIL.inBounds(exy.x(), exy.y(), _x+_w-10, _y, 10, _h-42))
+        if (UTIL.inBounds(exy.x(), exy.y(), _x+_w-10, _y, 10, _h-42))
         {
             // Right-hand dragbar;  when dragged this should move the wave
             // when in manual mode.  TODO:  Make this actually work.
-        }
-        else
-        {
-            // Delegate to children
-            _children.forEach(function(child) {
-                if (UTIL.inBounds(exy.x(), exy.y(),
-                                child.x(), child.y(), child.w(), child.h()))
-                {
-                    child.signal(e, exy);
-                }
-            });
         }
     }
     return {
