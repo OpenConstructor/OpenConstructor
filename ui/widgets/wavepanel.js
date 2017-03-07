@@ -132,19 +132,8 @@ WAVEPANEL.create = (function(x, y, w, h)
     // Draws the muscle bars to the given drawing context (ctx).
     function _drawMuscleBars(ctx)
     {
-        MODEL.instance.springs.forEach(function(spr) {
-            var color = "#000000";
-            var circled = false;
-            if (spr === MODEL.instance.selectedItem())
-            {
-                color = _selectionColor;
-                circled = true;
-            }
-            else if (spr === MODEL.instance.hoveredItem())
-            {
-                color = _hoverColor;
-                circled = true;
-            }
+        var selectedMuscle = null;
+        var drawMuscle = function(spr, color, circled) {
             var barDotRadius = 2;
             var circleRadius = barDotRadius * 2;
             var [xx, yy] = _muscleParamsToBarCoords(spr);
@@ -173,7 +162,25 @@ WAVEPANEL.create = (function(x, y, w, h)
                 ctx.stroke();
                 ctx.closePath();
             }
+        };
+        MODEL.instance.springs.forEach(function(spr) {
+            var color = "#000000";
+            var circled = false;
+            if (spr === MODEL.instance.selectedItem())
+            {
+                selectedMuscle = spr;
+                return;
+            }
+            else if (spr === MODEL.instance.hoveredItem())
+            {
+                color = _hoverColor;
+                circled = true;
+            }
+            drawMuscle(spr, color, circled);
         });
+        if (selectedMuscle !== null) {
+          drawMuscle(selectedMuscle, _selectionColor, true);
+        }
     }
 // public
     function __x(x)
