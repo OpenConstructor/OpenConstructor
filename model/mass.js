@@ -46,4 +46,14 @@ MASS.create = (function(s, isFreeMass)
     }
 });
 
-
+// Find whether a given item exposes all the same public members as a mass.
+// If it looks like a mass, and quacks like a mass, then it is a mass.
+// See:  https://en.wikipedia.org/wiki/Duck_typing
+MASS.isMass = function(candidate)
+{
+    // If any of these members are undefined, then it isn't a mass.  The
+    // "!!" is an ugly hack that coerces the return value to true or false.
+    return (candidate !== undefined) && (candidate !== null) &&
+           !!(candidate.s && candidate.v && candidate.a && candidate.v &&
+           candidate.f && candidate.m && candidate.isFreeMass);
+}
