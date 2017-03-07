@@ -126,8 +126,8 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
                 }
                 var scaled = _mouseDown.val - scaledDelta;
                 // Clamp
-                scaled = Math.min(scaled, _max);
-                scaled = Math.max(scaled, _min);
+                scaled = Math.min(scaled, Math.max(_min, _max));
+                scaled = Math.max(scaled, Math.min(_min, _max));
                 // Set value
                 _accessorFn(scaled);
             }
