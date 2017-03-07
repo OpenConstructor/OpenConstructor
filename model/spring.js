@@ -93,3 +93,15 @@ SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
     }
 });
 
+// Find whether a given item exposes all the same public members as a spring.
+// If it looks like a spring, and quacks like a spring, then it is a spring.
+// See:  https://en.wikipedia.org/wiki/Duck_typing
+SPRING.isSpring = function(candidate)
+{
+    // If any of these members are undefined, then it isn't a spring.  The
+    // "!!" is an ugly hack that coerces the return value to true or false.
+    return (candidate !== undefined) && (candidate !== null) &&
+           !!(candidate.m1 && candidate.m2 && candidate.restlength &&
+           candidate.amplitude && candidate.phase && candidate.isBar &&
+           candidate.toJSON);
+}
