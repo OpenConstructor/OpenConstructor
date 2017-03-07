@@ -24,7 +24,7 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
     var _accessorFn = accessorFn;
     var _min = min;
     var _max = max;
-    var _mouseDown = false;
+    var _mouseDown = null;
     var _invert = (invert !== undefined)? invert : false;
     //var _children = [];   // SLIDER WIDGET can't have child WIDGETS.
 // public
@@ -101,20 +101,34 @@ SLIDER.create = (function(x, y, w, h, accessorFn, min, max, invert)
         switch (e.type)
         {
         case "mouseup":
-            _mouseDown = false;
+            _mouseDown = null;
             break;
         case "mousedown":
-            _mouseDown = true;
-            // fall through
+            // Save the position of the last mouse click, but don't update the
+            // slider yet.  Sliders are updated when they are dragged, not when
+            // they are clicked.
+            _mouseDown = {
+              // The y-coordinate of the mouse click, in client coordinates.
+              pos: exy.y(),
+              // The current value of the slider, snapshotted at the moment the
+              // slider was clicked.
+              val: _accessorFn()
+            };
         case "mousemove":
+            // If we're dragging, update the slider value.
             if (_mouseDown)
             {
-                var proportion = (_h - exy.y() + _y) / (1.0 * _h);
+                var pixelDelta = (exy.y() - _mouseDown.pos)/(1.0 * _h);
+                var scaledDelta = (_max-_min) * pixelDelta;
                 if (_invert)
                 {
-                    proportion = 1 - proportion;
+                    scaledDelta *= -1;
                 }
-                var scaled = proportion * (_max-_min) + _min;
+                var scaled = _mouseDown.val - scaledDelta;
+                // Clamp
+                scaled = Math.min(scaled, _max);
+                scaled = Math.max(scaled, _min);
+                // Set value
                 _accessorFn(scaled);
             }
             break;
