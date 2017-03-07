@@ -60,9 +60,14 @@ UI.instance = (function()
             // pass along event
             _rootpanel.signal(e, exy);
         };
+        function scrollHandler(e) {
+            _canvasTopLeft = VECTOR.create(_viewport.getBoundingClientRect()["left"],
+                                           _viewport.getBoundingClientRect()["top"]);
+        }
         _viewport.onmousedown = genericHandler;
         _viewport.onmousemove = genericHandler;
         _viewport.onmouseup = genericHandler;
+        window.onscroll = scrollHandler;
         _authorField.oninput = _updateAuthor;
         _nameField.oninput = _updateModelname;
     }
