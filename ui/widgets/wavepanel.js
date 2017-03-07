@@ -132,7 +132,7 @@ WAVEPANEL.create = (function(x, y, w, h)
     // Draws the muscle bars to the given drawing context (ctx).
     function _drawMuscleBars(ctx)
     {
-        var selectedMuscle = null;
+        // Helper-function that draws one muscle bar.
         var drawMuscle = function(spr, color, circled) {
             var barDotRadius = 2;
             var circleRadius = barDotRadius * 2;
@@ -163,23 +163,29 @@ WAVEPANEL.create = (function(x, y, w, h)
                 ctx.closePath();
             }
         };
+        // Iterate through the springs and use the above function to draw
+        // their muscle bars into the wave panel one-by-one.
         MODEL.instance.springs.forEach(function(spr) {
             var color = "#000000";
-            var circled = false;
-            if (spr === MODEL.instance.selectedItem())
+            if (spr === MODEL.instance.selectedItem() ||
+                spr === MODEL.instance.hoveredItem())
             {
-                selectedMuscle = spr;
+                // If this spring is selected or hovered, don't draw its muscle
+                // bar just yet.  We'll draw it last so it shows up on top of
+                // all the other muscle bars.
                 return;
             }
-            else if (spr === MODEL.instance.hoveredItem())
-            {
-                color = _hoverColor;
-                circled = true;
-            }
-            drawMuscle(spr, color, circled);
+            drawMuscle(spr, color);
         });
-        if (selectedMuscle !== null) {
-          drawMuscle(selectedMuscle, _selectionColor, true);
+        // Draw the selected and hovered springs last, so they show up on top
+        // of all the other muscle bars.
+        if (SPRING.isSpring(MODEL.instance.hoveredItem()))
+        {
+            drawMuscle(MODEL.instance.hoveredItem(), _hoverColor, true);
+        }
+        if (SPRING.isSpring(MODEL.instance.selectedItem()))
+        {
+            drawMuscle(MODEL.instance.selectedItem(), _selectionColor, true);
         }
     }
 // public
