@@ -21,8 +21,8 @@ communityconstructor is an alpha, so you will encounter bugs and rough edges.  P
 communityconstructor is intended to be simple to understand and to run.  It weighs in under 2000 lines of JS and has no external dependencies.  It is heavily commented and its architecture is kept relatively simple, with the goal of being understandable by anyone who wants to know how it works, and maintainable by anyone who wants to contribute.
 ## Design goals
 - no dependencies
-- O(1) and O(N) algorithms only
 - minimal codebase size and complexity
+- O(1) and O(N) algorithms wherever possible
 - compatibility with all modern browsers (ES5)
 - look-and-feel as close as possible to classic sodaplay
 - easy for anyone to create their own models and share them
