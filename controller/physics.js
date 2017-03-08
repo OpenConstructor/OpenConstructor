@@ -240,10 +240,9 @@ PHYSICS.instance = (function()
                     // which turns into at^2 + bt + c = 0 for some a, b, c
                     //
                     // which you can then solve for t
-                    // and see if either value of t if (-dt <= t <= 0) corresponds 
+                    // and see if either root of t (if -dt <= t <= 0) corresponds 
                     // to a moment when
-                    // 0 <= s <= 1
-                    //
+                    // 0 <= s <= 1 (when the mass is between m1 and m2)
                     // if it does, we've found our moment of collision!
                     // TODO: all that math^^^
                     
@@ -255,12 +254,20 @@ PHYSICS.instance = (function()
                     //      v_m_COM_after . tangent = mu * (v_m_COM_before . tangent)
                     //  this gives us six unknowns for the three impulse vectors,
                     //  so that math should check out
+                    //
+                    //  let j_m, j_1, and j_2 represent the three impulses that will
+                    //  affect the three masses involved in this collision
+                    //  let's do all the math using normal and tangent as the basis vectors
+                    //  so the conservation of momentum is
+                    //  sum m_i*v_iafter = sum m_i*v_ibefore
+                    //
                     //  TODO: all that math^^^
 
                     // now push all three impulses into the impulse array
                     // this is so that more simultaneous collisions can take place
                     // in a sensible-ish manner; there's really no nice solution
                     // that also guarantees halting
+                    // TODO: a little programming
                 }
             });
         });
