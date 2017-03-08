@@ -228,6 +228,10 @@ PHYSICS.instance = (function()
                 }
                 if (intersects(massBox, springBox))
                 {
+                    var mass = massBox.mass;
+                    var m1 = spring.m1;
+                    var m2 = spring.m2;
+
                     // calculate the point of collision using the
                     // set of equations
                     // s_mass(t) = x*s_m1(t) + (1-x)*s_m2(t),
@@ -238,8 +242,8 @@ PHYSICS.instance = (function()
                     // one of the endpoints (modelling when the mass is collinear
                     // with the spring):
                     // (s_mass(t)-m1(t)).orth(m1(t)-m2(t)) = 0
-                    // (mass.s - m1.s + (mass.v - m1.v)*t).orth(m1.s - m2.s + (m1.v - m2.v)*t) = 0
-                    // let A = mass.s - m1.s, B = mass.v - m1.v, C = m1.s - m2.s, and D = m1.v - m2.v:
+                    // (mass.s - m1.s + (mass.v - m1.v)*t).orth(m2.s - m1.s + (m2.v - m1.v)*t) = 0
+                    // let A = mass.s - m1.s, B = mass.v - m1.v, C = m2.s - m1.s, and D = m2.v - m1.v:
                     // (A + B*t).orth(C + D*t) = 0
                     // (Ax + Bx*t, Ay + By*t).(-Cy - Dy*t, Cx + Dx*t) = 0
                     //
@@ -251,6 +255,63 @@ PHYSICS.instance = (function()
                     // 0 <= s <= 1 (when the mass is between m1 and m2)
                     // if it does, we've found our moment of collision!
                     // TODO: all that math^^^
+                    var A = VECTOR.sub(mass.s, m1.s);
+                    var B = VECTOR.sub(mass.v, m1.v);
+                    var C = VECTOR.sub(m2.s, m1.s);
+                    var D = VECTOR.sub(m2.v, m1.v);
+
+                    var a = -B.x()*D.y() + B.y()*D.x();
+                    var b = -A.x()*D.y() - B.x()*C.y() + B.y()*C.x() + A.y()*D.x();
+                    var c = -A.x()*C.y() + A.y()*C.x();
+                    
+                    var ts = [];
+
+                    // if a is not zero
+                    if (Math.abs(a) > 0.000001)
+                    {
+
+                        // no real solution
+                        if (b*b - 4.0*a*c < 0)
+                        {
+                            return;
+                        }
+                        ts = [(-b+Math.sqrt(b*b - 4.0*a*c))/(2*a),
+                                  (-b-Math.sqrt(b*b - 4.0*a*c))/(2*a)];
+                    }
+                    else
+                    {
+                        // TODO: solve linear system
+                    }
+
+                    var results = ts.map(function(t) {
+                        // (s_mass(t)-m1(t)).norm(m2(t)-m1(t)) = -s*L
+                        // where L = |m2(t) - m1(t)|
+                        
+                        if (t < -dt || t > 0) {
+                            return null;
+                        }
+                        var L = VECTOR.mag(VECTOR.add(C, VECTOR.mul(D,t)));
+                        var s = VECTOR.dot(VECTOR.add(A, VECTOR.mul(B, t)),
+                                          VECTOR.add(C, VECTOR.mul(D, t)).norm())/L;
+                        if (s < 0 || s > 1) {
+                            return null;
+                        }
+                        return { t: t, s: s };
+                    })
+                    .filter(function(x) { return x !== null; });
+
+                    if (results.length === 0) {
+                        return;
+                    }
+
+                    // find the point of collision that happened first
+                    var firstResult = null;
+                    results.forEach(function(result) {
+                        if (firstResult === null || firstResult.t > result.t)
+                        {
+                            firstResult = result;
+                        }
+                    });
                     
                     // we can solve for the collision response by assuming
                     //   - conservation of momentum,
