@@ -148,6 +148,131 @@ PHYSICS.instance = (function()
             }
         });
     }
+
+    // Check all the barsprings for collisions in the previous frame.
+    function _collideBars(dt)
+    {
+        // Algorithm is O(ns), could be sped up to O((n + s) log n) fairly
+        // trivially, but that appears to be counter to the goal of this project I think?
+
+        // NOTE: There is a ton of repeated work because I wasn't sure
+        // how best to cache mass positions. If there is a guarantee that
+        // no masses can be spawned within a subtick, adding a stage pre-integration
+        // to collect mass positions referenceable by index would be enough.
+        // NOTE: limit one collision per mass per subtick.
+        // Eh, this works for now I guess
+        var impulses = [];
+        // Right now we generate the bounding boxes of the movement of each
+        // mass. This will be compared with the bounding boxes of the barsprings
+        // to quickly eliminate the majority of cases where there isn't any
+        // overlap between the two.
+        var getMassBox = function(mass) {
+            // NOTE: DO NOT MUTATE endPos
+            var endPos = mass.s;
+            var startPos = VECTOR.add(endPos, VECTOR.mul(mass.v, -dt));
+            var minX = Math.min(endPos.x(), startPos.x());
+            var maxX = Math.max(endPos.x(), startPos.x());
+            var minY = Math.min(endPos.y(), startPos.y());
+            var maxY = Math.max(endPos.y(), startPos.y());
+            return {
+                mass: mass,
+                box: {
+                    left: minX,
+                    right: maxX,
+                    top: maxY,
+                    bottom: minY
+                }
+            };
+        }
+
+        var intersects = function(a, b) {
+            if (a.right < b.left || a.left > b.right ||
+                    a.top < b.bottom || a.bottom > b.top)
+            {
+                return false;
+            }
+              else
+            {
+                return true;
+            }
+        };
+        var massBoxes = MODEL.instance.masses.map(getMassBox);
+
+        MODEL.instances.springs.forEach(function(spring) {
+            if (!spring.isBar())
+            {
+                return;
+            }
+
+            var m1Box = getMassBox(spring.m1);
+            var m2Box = getMassBox(spring.m2);
+
+            var minX = Math.min(m1Box.left, m2Box.left);
+            var maxX = Math.max(m1Box.right, m2Box.right);
+            var minY = Math.min(m1Box.bottom, m2Box.bottom);
+            var maxY = Math.max(m1Box.top, m2Box.top);
+
+            var springBox = {
+                left: minX,
+                right: maxX,
+                top: maxY,
+                bottom: minY
+            };
+
+            massBoxes.forEach(function(massBox) {
+                if (intersects(massBox, springBox))
+                {
+                    // calculate the point of collision using the
+                    // set of equations
+                    // s_mass(t) = x*s_m1(t) + (1-x)*s_m2(t),
+                    // which is nontrivially solvable, because it ends up
+                    // being a system of parabolas, so let's use the somewhat
+                    // simpler (and linearly solvable) case where we project
+                    // s_mass(t) onto the normal of the spring, in the frame of
+                    // one of the endpoints (modelling when the mass is collinear
+                    // with the spring):
+                    // (s_mass(t)-m1(t)).orth(m1(t)-m2(t)) = 0
+                    // (mass.s - m1.s + (mass.v - m1.v)*t).orth(m1.s - m2.s + (m1.v - m2.v)*t) = 0
+                    // let A = mass.s - m1.s, B = mass.v - m1.v, C = m1.s - m2.s, and D = m1.v - m2.v:
+                    // (A + B*t).orth(C + D*t) = 0
+                    // (Ax + Bx*t, Ay + By*t).(-Cy - Dy*t, Cx + Dx*t) = 0
+                    //
+                    // which turns into at^2 + bt + c = 0 for some a, b, c
+                    //
+                    // which you can then solve for t
+                    // and see if either value of t if (-dt <= t <= 0) corresponds 
+                    // to a moment when
+                    // 0 <= s <= 1
+                    //
+                    // if it does, we've found our moment of collision!
+                    // TODO: all that math^^^
+                    
+                    // we can solve for the collision response by assuming
+                    //   - conservation of momentum,
+                    //   - conservation of angular momentum (at two points), and
+                    //   - assuming the collision is characterized by e and mu so that
+                    //      v_m_COM_after . normal = -e * (v_m_COM_before . normal)
+                    //      v_m_COM_after . tangent = mu * (v_m_COM_before . tangent)
+                    //  this gives us six unknowns for the three impulse vectors,
+                    //  so that math should check out
+                    //  TODO: all that math^^^
+
+                    // now push all three impulses into the impulse array
+                    // this is so that more simultaneous collisions can take place
+                    // in a sensible-ish manner; there's really no nice solution
+                    // that also guarantees halting
+                }
+            });
+        });
+
+        impulses.forEach(function(impulse) {
+            var mass = impulse.mass;
+            mass.s.add(VECTOR.mul(mass.v, impulse.time));
+            mass.v.add(impulse.amount);
+            mass.s.add(VECTOR.mul(mass.v, impulse.time));
+        });
+    }
+
     // Run a single tick of the physics engine.  Takes (dt), which is the
     // amount of simulated time measured in seconds.
     function _subtick(dt)
@@ -161,6 +286,8 @@ PHYSICS.instance = (function()
         _integrate(dt);
         // collide
         _collide();
+        // collide more
+        _collideBars(dt);
     }
 // public
     // Should be called once per frame.
