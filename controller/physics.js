@@ -220,6 +220,12 @@ PHYSICS.instance = (function()
             };
 
             massBoxes.forEach(function(massBox) {
+                // skip the mass if it's part of the spring; the spring
+                // can't collide with itself
+                if (massBox.mass === spring.m1 || massBox.mass === spring.m2)
+                {
+                    return;
+                }
                 if (intersects(massBox, springBox))
                 {
                     // calculate the point of collision using the
