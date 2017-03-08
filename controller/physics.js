@@ -280,9 +280,12 @@ PHYSICS.instance = (function()
 
         impulses.forEach(function(impulse) {
             var mass = impulse.mass;
+            // Rewind to the time of impact, add in the force and wind back to present time
+            // NOTE: This operation is noncommutative, so the order that impulses are applied
+            // matters, but hopefully the error isn't too much
             mass.s.add(VECTOR.mul(mass.v, impulse.time));
             mass.v.add(impulse.amount);
-            mass.s.add(VECTOR.mul(mass.v, impulse.time));
+            mass.s.add(VECTOR.mul(mass.v, -impulse.time));
         });
     }
 
