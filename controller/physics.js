@@ -320,9 +320,6 @@ PHYSICS.instance = (function()
                         }
                     });
 
-                    console.log("found collision: ");
-                    console.log(mass, spring, firstResult);
-
                     var t = firstResult.t;
                     var s = firstResult.s;
                     
@@ -370,9 +367,6 @@ PHYSICS.instance = (function()
                     var j2 = VECTOR.add(
                                 VECTOR.mul(jm_perp, -s),
                                 VECTOR.mul(jm_par, -(m2.m()/(m1.m() + m2.m()))));
-                    console.log("collision response: ");
-                    console.log([par.x(), par.y()], [perp.x(), perp.y()]);
-                    console.log([jm.x(), jm.y()], [j1.x(), j1.y()], [j2.x(), j2.y()]);
                     // now push all three impulses into the impulse array
                     // this is so that more simultaneous collisions can take place
                     // in a sensible-ish manner; there's really no nice solution
@@ -402,13 +396,9 @@ PHYSICS.instance = (function()
             // Rewind to the time of impact, add in the force and wind back to present time
             // NOTE: This operation is noncommutative, so the order that impulses are applied
             // matters, but hopefully the error isn't too much
-            console.log("mass initial pos");
-            console.log([mass.s.x(), mass.s.y()]);
             mass.s.add(VECTOR.mul(mass.v, impulse.time));
             mass.v.add(VECTOR.mul(impulse.amount, 1.0/mass.m()));
             mass.s.add(VECTOR.mul(mass.v, -impulse.time));
-            console.log("mass final pos");
-            console.log([mass.s.x(), mass.s.y()]);
         });
     }
 
