@@ -76,6 +76,66 @@ PHYSICS.instance = (function()
 
         });
     }
+    // For each barspring, see if there are masses lying within 0.01 units of it,
+    // and if it is simulate the normal force if the system has a net force
+    // squeezing the two together.
+    function _collisionForce() {
+        MODEL.instance.masses.forEach(function(mass) {
+            MODEL.instance.springs.forEach(function(spr) {
+                if (spr.isBar())
+                {
+                    var m1 = spr.m1;
+                    var m2 = spr.m2;
+
+                    if (mass === m1 || mass === m2)
+                    {
+                        return;
+                    }
+                    var tangent = VECTOR.sub(m2.s, m1.s);
+                    var par = VECTOR.hat(tangent);
+                    var perp = VECTOR.create(-par.y(), par.x());
+
+                    var relPos = VECTOR.sub(mass.s, m1.s);
+                    var s = VECTOR.dot(relPos, par)/VECTOR.mag(tangent);
+                    if ((Math.abs(VECTOR.dot(relPos, perp)) < 0.005) && s >= 0 && s <= 1)
+                    {
+                        // if the mass is in contact with the spring, see if
+                        // the two are accelerating towards each other
+                        // if they are, add a normal force to both bodies that exactly
+                        // cancels the relative acceleration, ie.
+                        // find F_normal such that a_rel' = 0 and apply it to both bodies
+                        // TODO: add in friction
+
+                        var massPerp = VECTOR.dot(VECTOR.mul(mass.f, 1.0/mass.m()), perp);
+                        var springPerp = VECTOR.dot(VECTOR.add(VECTOR.mul(m1.f, (1.0-s)/m1.m()), VECTOR.mul(spr.m2.f, s/m2.m())), perp);
+
+                        var inDir = -Math.sign(VECTOR.dot(relPos, perp));
+                        var relAccel = massPerp - springPerp;
+                        console.log([VECTOR.dot(relPos, perp), relAccel]);
+                        if (Math.sign(relAccel) == inDir || Math.sign)
+                        {
+                            // they're headed towards each other; apply the normal force
+                            // that's related to the "effective mass" of the spring;
+                            // the mass of the spring if it were acting like a single
+                            // mass in this contact calculation, derived by
+                            // seeing how a force applied at the point of contact
+                            // causes that point to accelerate
+                            // then the normal force is simply the force such that
+                            // the relative acceleration of the two objects is zero
+                            var mEff = 1.0/((1.0-s)*(1.0-s)/m1.m() - s*s/m2.m());
+                            var fNormPerp = -relAccel*mass.m()*mEff/(mass.m() + mEff);
+                            console.log("n ", fNormPerp);
+
+                            var fNorm = VECTOR.mul(perp, fNormPerp);
+                            mass.f.add(fNorm);
+                            m1.f.add(VECTOR.mul(fNorm, -(1.0-s)));
+                            m2.f.add(VECTOR.mul(fNorm, -s));
+                        }
+                    }
+                }
+            });
+        });
+    }
     // Given the force on each mass, calculate each mass's new acceleration,
     // velocity and position.
     function _integrate(dt)
@@ -204,8 +264,8 @@ PHYSICS.instance = (function()
                 return;
             }
 
-            var m1Box = getMassBox(spring.m1);
-            var m2Box = getMassBox(spring.m2);
+            var m1Box = getMassBox(spring.m1).box;
+            var m2Box = getMassBox(spring.m2).box;
 
             var minX = Math.min(m1Box.left, m2Box.left);
             var maxX = Math.max(m1Box.right, m2Box.right);
@@ -215,8 +275,8 @@ PHYSICS.instance = (function()
             var springBox = {
                 left: minX,
                 right: maxX,
-                top: maxY,
-                bottom: minY
+                bottom: minY,
+                top: maxY
             };
 
             massBoxes.forEach(function(massBox) {
@@ -226,7 +286,7 @@ PHYSICS.instance = (function()
                 {
                     return;
                 }
-                if (intersects(massBox, springBox))
+                if (intersects(massBox.box, springBox))
                 {
                     var mass = massBox.mass;
                     var m1 = spring.m1;
@@ -322,6 +382,7 @@ PHYSICS.instance = (function()
 
                     var t = firstResult.t;
                     var s = firstResult.s;
+                    console.log(t, s);
                     
                     // we can solve for the collision response by assuming
                     //   - conservation of momentum,
@@ -371,7 +432,6 @@ PHYSICS.instance = (function()
                     // this is so that more simultaneous collisions can take place
                     // in a sensible-ish manner; there's really no nice solution
                     // that also guarantees halting
-                    // TODO: a little programming
                     impulses.push({
                       mass: mass,
                       amount: jm,
@@ -411,6 +471,7 @@ PHYSICS.instance = (function()
         _gForce();
         _fForce();
         _kForce();
+        _collisionForce();
         // apply forces
         _integrate(dt);
         // collide
