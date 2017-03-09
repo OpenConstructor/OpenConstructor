@@ -299,7 +299,7 @@ PHYSICS.instance = (function()
                         }
                         var L = VECTOR.mag(VECTOR.add(C, VECTOR.mul(D,t)));
                         var s = VECTOR.dot(VECTOR.add(A, VECTOR.mul(B, t)),
-                                          VECTOR.add(C, VECTOR.mul(D, t)).norm())/L;
+                                          VECTOR.hat(VECTOR.add(C, VECTOR.mul(D, t))))/L;
                         if (s < 0 || s > 1) {
                             return null;
                         }
@@ -322,6 +322,9 @@ PHYSICS.instance = (function()
 
                     console.log("found collision: ");
                     console.log(mass, spring, firstResult);
+
+                    var t = firstResult.t;
+                    var s = firstResult.s;
                     
                     // we can solve for the collision response by assuming
                     //   - conservation of momentum,
@@ -335,16 +338,61 @@ PHYSICS.instance = (function()
                     //  let j_m, j_1, and j_2 represent the three impulses that will
                     //  affect the three masses involved in this collision
                     //  let's do all the math using normal and tangent as the basis vectors
-                    //  so the conservation of momentum is
-                    //  sum m_i*v_iafter = sum m_i*v_ibefore
-                    //
+                    //  and also on a separate piece of paper because it's kind of involved
+                    //  TODO: describe the derivation of impulses here
                     //  TODO: all that math^^^
 
+                    // calculate the positions of the barspring at the point of collision
+                    var s1 = VECTOR.add(VECTOR.mul(m1.v, t), m1.s);
+                    var s2 = VECTOR.add(VECTOR.mul(m2.v, t), m2.s);
+
+                    var par = VECTOR.hat(VECTOR.sub(s2, s1));
+                    var perp = VECTOR.create(-par.y(), par.x());
+
+                    var vCOM = VECTOR.mul(
+                        VECTOR.add(VECTOR.mul(mass.v, mass.m()), VECTOR.add(VECTOR.mul(m1.v, m1.m()), VECTOR.mul(m2.v, m2.m()))),
+                        1.0/(mass.m() + m1.m() + m2.m()));
+                    var vrel = VECTOR.sub(mass.v, vCOM);
+
+                    var vrel_perp = VECTOR.dot(vrel, perp);
+                    var vrel_par = VECTOR.dot(vrel, par);
+
+                    var jm_perp = VECTOR.mul(
+                        perp,
+                        -1.0 * mass.m() * (1 + spring.reflection()) * vrel_perp);
+                    var jm_par = VECTOR.mul(
+                        par,
+                        -mass.m() * spring.friction() * vrel_par);
+                    var jm = VECTOR.add(jm_perp, jm_par);
+                    var j1 = VECTOR.add(
+                                VECTOR.mul(jm_perp, -(1.0 - s)),
+                                VECTOR.mul(jm_par, -(m1.m()/(m1.m() + m2.m()))));
+                    var j2 = VECTOR.add(
+                                VECTOR.mul(jm_perp, -s),
+                                VECTOR.mul(jm_par, -(m2.m()/(m1.m() + m2.m()))));
+                    console.log("collision response: ");
+                    console.log([par.x(), par.y()], [perp.x(), perp.y()]);
+                    console.log([jm.x(), jm.y()], [j1.x(), j1.y()], [j2.x(), j2.y()]);
                     // now push all three impulses into the impulse array
                     // this is so that more simultaneous collisions can take place
                     // in a sensible-ish manner; there's really no nice solution
                     // that also guarantees halting
                     // TODO: a little programming
+                    impulses.push({
+                      mass: mass,
+                      amount: jm,
+                      time: t
+                    });
+                    impulses.push({
+                      mass: m1,
+                      amount: j1,
+                      time: t
+                    });
+                    impulses.push({
+                      mass: m2,
+                      amount: j2,
+                      time: t
+                    });
                 }
             });
         });
@@ -354,9 +402,13 @@ PHYSICS.instance = (function()
             // Rewind to the time of impact, add in the force and wind back to present time
             // NOTE: This operation is noncommutative, so the order that impulses are applied
             // matters, but hopefully the error isn't too much
+            console.log("mass initial pos");
+            console.log([mass.s.x(), mass.s.y()]);
             mass.s.add(VECTOR.mul(mass.v, impulse.time));
-            mass.v.add(impulse.amount);
+            mass.v.add(VECTOR.mul(impulse.amount, 1.0/mass.m()));
             mass.s.add(VECTOR.mul(mass.v, -impulse.time));
+            console.log("mass final pos");
+            console.log([mass.s.x(), mass.s.y()]);
         });
     }
 
