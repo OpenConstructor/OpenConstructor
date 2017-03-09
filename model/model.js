@@ -338,7 +338,7 @@ MODEL.instance = (function()
             _addMass(myMass);
         });
         myJson.springs.forEach(function(jSpring) {
-            var mySpring = SPRING.create(_masses[jSpring.m1], _masses[jSpring.m2], jSpring.restlength, jSpring.amplitude, jSpring.phase);
+            var mySpring = SPRING.create(_masses[jSpring.m1], _masses[jSpring.m2], jSpring.restlength, jSpring.amplitude, jSpring.phase, jSpring.isBar, jSpring.reflection, jSpring.friction);
             _addSpring(mySpring);
         });
     }

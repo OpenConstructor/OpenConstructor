@@ -198,7 +198,7 @@ PHYSICS.instance = (function()
         };
         var massBoxes = MODEL.instance.masses.map(getMassBox);
 
-        MODEL.instances.springs.forEach(function(spring) {
+        MODEL.instance.springs.forEach(function(spring) {
             if (!spring.isBar())
             {
                 return;
@@ -254,7 +254,6 @@ PHYSICS.instance = (function()
                     // to a moment when
                     // 0 <= s <= 1 (when the mass is between m1 and m2)
                     // if it does, we've found our moment of collision!
-                    // TODO: all that math^^^
                     var A = VECTOR.sub(mass.s, m1.s);
                     var B = VECTOR.sub(mass.v, m1.v);
                     var C = VECTOR.sub(m2.s, m1.s);
@@ -280,7 +279,15 @@ PHYSICS.instance = (function()
                     }
                     else
                     {
-                        // TODO: solve linear system
+                        // solve linear system if it's solvable
+                        if (Math.abs(b) > 0.0000001)
+                        {
+                            ts = [-c/b];
+                        }
+                        else
+                        {
+                            return;
+                        }
                     }
 
                     var results = ts.map(function(t) {
@@ -312,6 +319,9 @@ PHYSICS.instance = (function()
                             firstResult = result;
                         }
                     });
+
+                    console.log("found collision: ");
+                    console.log(mass, spring, firstResult);
                     
                     // we can solve for the collision response by assuming
                     //   - conservation of momentum,
