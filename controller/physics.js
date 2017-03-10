@@ -111,7 +111,6 @@ PHYSICS.instance = (function()
 
                         var inDir = -Math.sign(VECTOR.dot(relPos, perp));
                         var relAccel = massPerp - springPerp;
-                        console.log([VECTOR.dot(relPos, perp), relAccel]);
                         if (Math.sign(relAccel) == inDir || Math.sign)
                         {
                             // they're headed towards each other; apply the normal force
@@ -124,7 +123,6 @@ PHYSICS.instance = (function()
                             // the relative acceleration of the two objects is zero
                             var mEff = 1.0/((1.0-s)*(1.0-s)/m1.m() - s*s/m2.m());
                             var fNormPerp = -relAccel*mass.m()*mEff/((mass.m() + mEff));
-                            console.log("n ", fNormPerp);
 
                             var fNorm = VECTOR.mul(perp, fNormPerp);
                             // TODO: add forces at the end so that all collisions are treated equally
@@ -383,7 +381,6 @@ PHYSICS.instance = (function()
 
                     var t = firstResult.t;
                     var s = firstResult.s;
-                    console.log(t, s);
                     
                     // we can solve for the collision response by assuming
                     //   - conservation of momentum,
