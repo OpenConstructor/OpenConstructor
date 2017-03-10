@@ -97,7 +97,7 @@ PHYSICS.instance = (function()
 
                     var relPos = VECTOR.sub(mass.s, m1.s);
                     var s = VECTOR.dot(relPos, par)/VECTOR.mag(tangent);
-                    if ((Math.abs(VECTOR.dot(relPos, perp)) < 0.005) && s >= 0 && s <= 1)
+                    if ((Math.abs(VECTOR.dot(relPos, perp)) < 0.010) && s >= 0 && s <= 1)
                     {
                         // if the mass is in contact with the spring, see if
                         // the two are accelerating towards each other
@@ -123,10 +123,11 @@ PHYSICS.instance = (function()
                             // then the normal force is simply the force such that
                             // the relative acceleration of the two objects is zero
                             var mEff = 1.0/((1.0-s)*(1.0-s)/m1.m() - s*s/m2.m());
-                            var fNormPerp = -relAccel*mass.m()*mEff/(mass.m() + mEff);
+                            var fNormPerp = -relAccel*mass.m()*mEff/((mass.m() + mEff));
                             console.log("n ", fNormPerp);
 
                             var fNorm = VECTOR.mul(perp, fNormPerp);
+                            // TODO: add forces at the end so that all collisions are treated equally
                             mass.f.add(fNorm);
                             m1.f.add(VECTOR.mul(fNorm, -(1.0-s)));
                             m2.f.add(VECTOR.mul(fNorm, -s));
