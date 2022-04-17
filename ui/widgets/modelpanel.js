@@ -31,6 +31,8 @@ MODELPANEL.create = (function(x, y, w, h)
     // Color of the hovered spring or mass (i.e. the item that the mouse cursor
     // is currently pointing at).
     var _hoverColor = "#0000ff";
+    // Color of a bar spring.
+    var _barColor = "#bbbbff";
     // Given a position vector in pixels from top-left of client area (v),
     // creates and returns a new vector representing the same point in metric
     // units that can be processed by the MODEL and the PHYSICS engine.
@@ -111,6 +113,10 @@ MODELPANEL.create = (function(x, y, w, h)
             {
                 color = _hoverColor;
                 circled = true;
+            }
+            if (spr.isBar())
+            {
+                color = _barColor;
             }
             // draw line
             var [x1, y1] = _metersToPixels(spr.m1.s).get();

@@ -14,7 +14,7 @@ var SPRING = SPRING || {};
 // for no deflection, to 1 or -1 for maximum deflection) and the phase of the
 // deflection in radians (phase).  A final optional parameter (isBar) specifies
 // whether the spring collides with masses (TBD - Not yet implemented).
-SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
+SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar, reflection, friction)
 {
 // private
     // The mass at one end of the spring
@@ -34,6 +34,8 @@ SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
     // otherwise false.
     var _isBar = (isBar == undefined)? false : isBar;
 // public
+    var _reflection = (reflection == undefined)? 0 : reflection;
+    var _friction = (friction == undefined)? 0 : friction;
     // Accessors
     function __restlength(restlength)
     {
@@ -63,10 +65,31 @@ SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
         }
         return _phase;
     }
-    function __isBar()
+    function __isBar(isBar)
     {
+        if (isBar !== undefined)
+        {
+            _isBar = isBar;
+        }
         return _isBar;
     }
+    function __reflection(reflection)
+    {
+        if (reflection !== undefined)
+        {
+            _reflection = reflection;
+        }
+        return _reflection;
+    }
+    function __friction(friction)
+    {
+        if (friction !== undefined)
+        {
+            _friction = friction;
+        }
+        return _friction;
+    }
+
     // Emit a simple object containing the spring parameters.  Used by
     // JSON.stringify() during model export.
     // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior
@@ -76,11 +99,25 @@ SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
         // the MODEL masses array.  This is a reliable way of conveying the same
         // information, because the order of this array is preserved when the
         // model is exported and imported.
-        return {"m1": MODEL.instance.masses.indexOf(_m1),
-                "m2": MODEL.instance.masses.indexOf(_m2),
-                "restlength": _restlength,
-                "amplitude": _amplitude,
-                "phase": _phase};
+        if (!_isBar)
+        {
+            return {"m1": MODEL.instance.masses.indexOf(_m1),
+                    "m2": MODEL.instance.masses.indexOf(_m2),
+                    "restlength": _restlength,
+                    "amplitude": _amplitude,
+                    "phase": _phase};
+        }
+            else
+        {
+            return {"m1": MODEL.instance.masses.indexOf(_m1),
+                    "m2": MODEL.instance.masses.indexOf(_m2),
+                    "restlength": _restlength,
+                    "amplitude": _amplitude,
+                    "phase": _phase,
+                    "isBar": _isBar,
+                    "reflection": _reflection,
+                    "friction": _friction};
+        }
     }
     return {
         m1: _m1,
@@ -89,6 +126,8 @@ SPRING.create = (function(m1, m2, restlength, amplitude, phase, isBar)
         amplitude: __amplitude,
         phase: __phase,
         isBar: __isBar,
+        reflection: __reflection,
+        friction: __friction,
         toJSON: _toJSON
     }
 });
